@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black">
+        <meta name="format-detection" content="telephone=no">
+        <meta name="wap-font-scale" content="no">
+        <meta http-equiv="Content-Security-Policy" content="script-src 'self'  *.cblive.tv *.kuaishouvideo.com *.efeizao.com http://cdn.staticfile.org *.cnzz.com *.geetest.com 'unsafe-inline' 'unsafe-eval'">
+        <link rel="shortcut icon" href="http://static.cblive.tv/dist/mobile/img/common/title_icon.png" type="image/x-icon">
+
+        <title>炸房</title>
+        <link style="text/css"  rel="stylesheet" href="http://static.cblive.tv/dist/mobile/css/component/layer.css" />
+        <link style="text/css" rel="stylesheet" href="http://static.cblive.tv/dist/mobile/css/common/common.css">
+        <link type="text/css" rel="stylesheet" href="http://static.cblive.tv/dist/mobile/css/poplayer/index.css?vs=0812"/>
+    
+        <script type='text/javascript' src="http://static.cblive.tv/dist/mobile/js/component/flexible.js"></script>
+
+    </head>
+
+    <body>
+        <em class="close"></em>
+        <div class="pl_spirits_wrap"></div>
+
+        <script src="http://cdn.staticfile.org/zepto/1.1.4/zepto.min.js"></script>
+        <script type='text/javascript' src="http://static.cblive.tv/dist/mobile/js/common/sea.min.js"></script>
+        <script type="text/javascript" src="http://cdn.staticfile.org/fastclick/1.0.3/fastclick.min.js"></script>
+        <script type='text/javascript' src="http://static.cblive.tv/dist/mobile/js/common/alluse.js"></script>
+        <script src="http://static.cblive.tv/dist/mobile/js/poplayer/activityRoom.js"></script>
+        <script>
+            seajs.config({
+                alias: {
+                    'plIndex' : 'js/poplayer/index.js',
+                    'normalAnimate': 'js/poplayer/normalAnimate.js',
+                    'giftRoom': 'js/poplayer/giftRoom.js'
+                }
+            })
+
+            // var animate_data = {"pid":"230","activityId":"12","rid":"44444444","mid":"220", "batchId":"1", "activityType":"2", "nickname": "果酱的名字", "seconds": "600"};
+            // setTimeout(function(){
+            //    showWebviewAnimation(animate_data);
+            // },0);
+            // setTimeout(function(){
+            //    showWebviewAnimation(animate_data);
+            // },1500);
+
+            // setTimeout(function(){
+            //    showWebviewAnimation(animate_data);
+            // },15000);
+
+            // setTimeout(function(){
+            //    showWebviewAnimation(animate_data);
+            // },30000);
+            $(".close").html(0);
+            function showWebviewAnimation(data){
+                console.log('data',data)
+                var animate_data = typeof(data) === 'string' ? JSON.parse(data) : data;
+                
+                /**
+                 * 特效 帝王套礼物炸房
+                 */
+                 $(".close").html(1);
+                if(animate_data['activityId'] == 129){
+                    return seajs.use('giftRoom',function(obj){
+                        obj.giftRoom(animate_data);
+                    });
+                }
+
+                /**
+                 * 特效 添加炸房gif动效,没有泡泡抽奖的部分
+                 */
+                if(animate_data.batchId == 0){
+                    seajs.use('normalAnimate', function(obj){
+                        obj.initAnimation(animate_data);
+                    });
+                    return true;
+                }
+
+                //其他活动
+                seajs.use('plIndex', function(obj){
+                    var fun = obj.showSpiritsAnimation;
+                    $(".close").html(2);
+                    switch (animate_data['activityId']){
+                        case "12":
+                            fun(ar.christmas(animate_data));
+                            break;
+                        //没有default
+                    }
+                });
+            }
+        </script>
+        <div style="display:none">
+             <script src="http://s11.cnzz.com/z_stat.php?id=1255976554&web_id=1255976554&vs=1" language="JavaScript"></script>
+        </div>
+    </body>
+
+</html>
