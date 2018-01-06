@@ -5,13 +5,14 @@
   "main": "webpack.config.js",
   "scripts": {
     "dll": "webpack --progress --colors --config ./webpack-dll.config.js",
-    "pc_dll": "set PLATFORM=pc&&webpack --progress --colors --config ./webpack-dll.config.js",
+    "pc_dll": "set PLATFORM=pc&&webpack --progress --colors --config ./webpack-dll.config.js"
   },
   "author": "Jesse",
   "license": "ISC",
   "dependencies": {
-    "axios": "0.15.3",
-    "vue": "2.2.6"
+    "axios": "^0.17.1",
+    "vue": "^2.5.13",
+    "webpack-zepto": "^0.0.1"
   },
   "devDependencies": {
     "babel-core": "6.24.0",
@@ -30,7 +31,6 @@
     "vue-loader": "11.3.3",
     "vue-template-compiler": "2.2.5",
     "webpack": "2.3.2",
-    "webpack-dev-server": "2.4.2",
-    "webpack-zepto": "0.0.1"
+    "webpack-dev-server": "2.4.2"
   }
 }
