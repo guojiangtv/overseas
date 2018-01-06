@@ -1,0 +1,343 @@
+<main id="app" v-cloak>
+    <section class="banner"></section>
+    <section class="activity">
+        <div class="header">
+            <div class="title"></div>
+        </div>
+        <div class="box_wrap">
+            <div class="activity_content">
+                <p class="activity_title"></p>
+                <div class="title">
+                    <p class="periods" v-show="showStage">第{{stage}}期</p>
+                    <p class="next_time" v-show="showNextTime">下期开始时间：{{nextStageStartTimeContent}}</p>
+                </div>
+                <ul class="tab">
+                    <li :class="{'on': showMount }" @click="showMount = true">
+                        <div class="mount"></div>
+                    </li>
+                    <li :class="{'on': !showMount }" @click="showMount = false">
+                        <div class="gift"></div>
+                    </li>
+                </ul>
+                <div class="tab_box">
+                    <ul class="tab_mount" :class="{'on':showMount}">
+                        <li v-for="(item,index) in mountList" :key="index">
+                            <div class="gift_img">
+                                <div v-if="index < 2" class="new"></div>
+                                <div :class="'gift_img_'+(index+1)"></div>
+                            </div>
+                            <p class="gift_title">{{item.desc}}</p>
+                            <p class="totalnum">总需：<span class="attention">{{item.capacity}}</span>人次</p>
+                            <div class="progress">
+                                <span class="content" :style="'width:'+(item.num*100/item.capacity)+'%;'"></span>
+                            </div>
+                            <div class="num">
+                                <p class="attend fl">
+                                    <span class="bold">{{item.num}}</span>
+                                    <br> 已参与人次
+                                </p>
+                                <p class="last fr">
+                                    <span class="bold fr">{{item.left_num}}</span>
+                                    <br> 剩余人次
+                                </p>
+                            </div>
+                            <p class="active_btn">
+                                <span class="preview" @click="preview(item)">预览</span>
+                                <span class="snatch" v-show="!item.is_open" @click="popUp(item)">立即参与夺宝</span>
+                                <span class="over" v-show="item.is_open">立即参与夺宝</span>
+                            </p>
+                            <p class="message attention" v-show="item.is_open">已开奖</p>
+                            <p class="message attention" v-show="!item.is_open">{{countDownTime}}</p>
+                        </li>
+                    </ul>
+                    <ul class="tab_gift" :class="{'on':!showMount}">
+                        <li v-for="(item,index) in giftList" :key="index">
+                            <div class="gift_img">
+                                <div v-if="index < 1" class="new"></div>
+                                <div :class="'gift_img_'+(index+1)"></div>
+                            </div>
+                            <p class="gift_title">{{item.desc}}</p>
+                            <p class="totalnum">总需：<span class="attention">{{item.capacity}}</span>人次</p>
+                            <div class="progress">
+                                <span class="content" :style="'width:'+(item.num*100/item.capacity)+'%;'"></span>
+                            </div>
+                            <div class="num">
+                                <p class="attend fl">
+                                    <span class="bold">{{item.num}}</span>
+                                    <br> 已参与人次
+                                </p>
+                                <p class="last fr">
+                                    <span class="bold fr">{{item.left_num}}</span>
+                                    <br> 剩余人次
+                                </p>
+                            </div>
+                            <p class="active_btn">
+                                <span class="preview" @click="preview(item)">预览</span>
+                                <span class="snatch" v-show="!item.is_open" @click="popUp(item)">立即参与夺宝</span>
+                                <span class="over" v-show="item.is_open">立即参与夺宝</span>
+                            </p>
+                            <p class="message attention" v-show="item.is_open">已开奖</p>
+                            <p class="message attention" v-show="!item.is_open">{{countDownTime}}</p>
+                        </li>
+                        <img class="gift_last" src='${require("../../../../static_guojiang_tv/src/mobile/v2/img/activity/wangcai/bottom.png")}'>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section>
+        <div class="layer-smash" v-show="smash" @click="destory"></div>
+        <div id="svgContainer" v-show="svgContainerBox" @click="destory"></div>
+    </section>
+    <section class="popup" v-show="snatchLayer">
+        <div class="mask"></div>
+        <div class="attend_wrap" v-show="attendWrap">
+            <div class="attend">
+                <span class="close" @click="close">X</span>
+                <p class="title">请填写参与人次</p>
+                <div class="input">
+                    <span class="subtraction" @click="subtraction">-</span>
+                    <input type="tel" name="giftnum" v-model.number="purchaseNum">
+                    <span class="addition" @click="addition">+</span>
+                </div>
+                <p class="can_buy">最大可购买人次{{maxLeftNum}}</p>
+                <p class="tips1" v-html="tips1"></p>
+                <p class="attention">总需消耗<span class="need">{{purchaseNum*10}}</span>克拉</p>
+                <p class="tips2" v-html="tips2"></p>
+                <div class="purchase">
+                    <span class="purchase_btn sure fl" @click="purchase">确认购买</span>
+                    <span class="purchase_btn cancel fr" @click="close">取消</span>
+                </div>
+            </div>
+        </div>
+        <div class="message_wrap" v-show="messageWrap">
+            <div class="message">
+                <span class="close" @click="close">X</span>
+                <p class="attention">恭喜您！参与成功！
+                    <br>你的幸运号码为</p>
+                <p class="number">{{lotteryNumber}}</p>
+                <p>（单次购买多人次则获得连续的幸运号码）</p>
+            </div>
+        </div>
+    </section>
+    <section class="rules_record">
+        <div class="header">
+            <div class="title"></div>
+        </div>
+        <div class="box_wrap">
+            <ul class="rules_content">
+                <li><span class="index">1</span>活动时间：<span class="attention">2017.12.28 12:00:00—2018.1.1 23:59:59</span></li>
+                <li><span class="index">2</span>如何购买：您可以选择自己喜欢的宝贝，并填写<span class="attention">任意人次</span>参与夺宝。每人次<span class="attention">仅需消耗10克拉</span>，即可获得一个或多个幸运号码，等待开奖（号码非自选）。</li>
+                <li><span class="index">3</span>开奖时间：当单品达到开奖人次则系统自动开奖，开奖前五分钟停止售卖，每固定间隔时长更新一次宝贝，具体刷新时间请见期数下方下期时间。如果商品在开奖时间未达到开奖人次，则全额返还用户购买时所花费的克拉数。</li>
+                <li><span class="index">4</span>开奖规则：按照购买人次进行等概率随机，购买越多人次，获得幸运大奖的概率越高。例如：A需要7000人次购买，用户B购买3人次，则中奖概率为3/7000。</li>
+                <li><span class="index">5</span>获奖用户奖品将自动下发至您的账户。</li>
+                <li><span class="index">6</span>您可在开奖记录表中查询中奖及参与记录。</li>
+                <li><span class="index">7</span>本活动期间，如存在违规行为（包括但不限于恶意套取奖品、机器作弊等违反诚实信用原则行为），将取消您的中奖资格，必要时追究法律责任。</li>
+                <li><span class="index">8</span>星光直播对本活动拥有最终解释权。</li>
+            </ul>
+            <div class="record">
+                <div class="record_title"></div>
+                <ul class="tab">
+                    <li :class="{'on': showAllList }" @click="change(1)">
+                        <div class="all_list"></div>
+                    </li>
+                    <li :class="{'on': showMyRecordList }" @click="change(2)">
+                        <div class="my_record_list"></div>
+                    </li>
+                    <li :class="{'on': showMyList }" @click="change(3)">
+                        <div class="my_list"></div>
+                    </li>
+                </ul>
+                <div class="tab_box">
+                    <div class="record_list all_list" :class="{'on': showAllList}">
+                        <div class="head">
+                            <span class="nickname">昵称</span><span class="prize_desc">奖励</span><span class="stage">期数</span><span class="lottery_number">中奖号码</span>
+                        </div>
+                        <ul>
+                            <li class="content" v-for="(item,index) in allPrizeList" :key="index"><span class="nickname">{{item.nickname}}</span><span class="attention prize_desc">{{item.prize_desc}}</span>
+                                <span
+                                    class="stage">{{item.stage}}</span>
+                                    <span class="attention lottery_number">{{item.lottery_number}}</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="record_list my_record_list" :class="{'on': showMyRecordList}">
+                        <div class="head"><span class="stage">期数</span><span class="numbers">参与人次</span><span class="lottery_number">中奖号码</span><span class="prize_desc">奖励</span></div>
+                        <ul>
+                            <li class="content" v-for="(item,index) in myPrizeList"><span class="stage">{{item.stage}}</span><span class="attention numbers">{{item.numbers}}</span><span class="lottery_number">{{item.lottery_number}}</span>
+                                <span class="attention prize_desc">{{item.prize_desc}}</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="record_list my_list" :class="{'on': showMyList}">
+                        <div class="head"><span class="nper">期数</span><span class=" giftname">宝贝<br>名称</span><span class="people">参与<br>人次</span><span class=" number">幸运<br>号码</span>
+                            <span class="time">购买
+                                <br>时间</span><span class="ing">是否<br>中奖</span></div>
+                        <ul>
+                            <li class="content" v-for="(item,index) in myPurchaseList"><span class="nper">{{item.stage}}</span><span class="attention giftname">{{item.prize_desc}}</span><span class="people">{{item.numbers}}</span>
+                                <span class="attention number">{{item.lottery_desc}}</span><span class="time">{{item.purchase_time}}</span>
+                                <span
+                                    class="attention ing">{{item.status_desc}}</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="boom" v-show="showRules">
+        <div class="boom_wrap">
+            <div class="boom_rules">
+                <div class="boom_title"></div>
+                <span class="close" @click="close">X</span>
+                <ul>
+                    <li><span class="index">1</span>活动时间：<span class="attention">2017.12.28 12:00:00—2018.1.1 23:59:59</span></li>
+                    <li><span class="index">2</span>活动期间，单个主播直播间每收到3000个“旺财”，即可炸出元旦红包！快来抢克拉吧！</li>
+                    <li><span class="index">3</span>主播和用户奖励将于活动结束后15个工作日内发放。</li>
+                    <li><span class="index">4</span>本次活动最终解释权归星光直播所有。</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+    <section class="list">
+        <div class="boom_btn" @click="showRules = !showRules"></div>
+        <div class="header">
+            <div class="title"></div>
+        </div>
+        <div class="box_wrap">
+            <ul class="tab">
+                <li :class="{'on': showList }" @click="showList = true">
+                    <div class="mod"></div>
+                </li>
+                <li :class="{'on': !showList }" @click="showList = false">
+                    <div class="user"></div>
+                </li>
+            </ul>
+            <div class="tab_box">
+                <div class="mod_list" :class="{'on':showList}">
+                    <ul class="prev_list">
+                        <li :class="'no'+(index+1)" v-for="(item,index) in mRanks" :key="index" v-if="index < 3">
+                            <div class="avatar_box">
+                                <div class="crown"></div>
+                                <span class="live" v-if="item.is_playing == 1">正在直播</span>
+                                <div class="avatar_wrap">
+                                    <img :src="item.head_pic_1" class="avatar" @click="inlive(item.rid)">
+                                </div>
+                                <span class="index"></span>
+                            </div>
+                            <div class="info">
+                                <p class="nickname">{{item.nickname}}</p>
+                                <p class="giftnum">收到 {{item.num}}</p>
+                                <p class="follow_btn nofollow" v-show="!item.is_attention" @click="attention(item.id,index)">+ 关注</p>
+                                <p class="follow_btn following" v-show="item.is_attention">已关注</p>
+                            </div>
+                        </li>
+                    </ul>
+                    <ul class="last_list mod-last-list">
+                        <li v-for="(item,index) in mRanks" v-if="index >= 3">
+                            <span class="index">{{index+1}}</span>
+                            <div class="avatar_box">
+                                <div class="avatar_wrap">
+                                    <img :src="item.head_pic_1" class="avatar" @click="inlive(item.rid)">
+                                </div>
+                            </div>
+                            <p class="info">
+                                <span class="nickname">{{item.nickname}}</span>
+                                <span class="live" v-if="item.is_playing == 1">正在直播</span>
+                                <span class="giftnum">收到 {{item.num}}</span>
+                            </p>
+                        </li>
+                    </ul>
+                    <div class="cashback">
+                        <ul>
+                            <li>
+                                <div class="gift gift1"></div>
+                                <p class="gift_name">第一名 周大福生肖狗马上旺黄金吊坠</p>
+                            </li>
+                            <li>
+                                <div class="gift gift2"></div>
+                                <p class="gift_name">第二名 周生生黄金贵妇狗吊坠</p>
+                            </li>
+                            <li>
+                                <div class="gift gift3"></div>
+                                <p class="gift_name">第三名 周大福生肖狗吉星高照黄金吊坠</p>
+                            </li>
+                            <li>
+                                <div class="gift gift4"></div>
+                                <p class="gift_name">第四名—第五名 返利2%</p>
+                            </li>
+                        </ul>
+                        <p class="explain bold">元气满满榜和聚宝盆榜单排名前五名即可获得丰厚奖励！</p>
+                        <p class="explain ">（返利数量=主播榜单收入*返利额度）</p>
+                    </div>
+                </div>
+                <div class="user_list" :class="{'on':!showList}">
+                    <ul class="prev_list">
+                        <li :class="'no'+(index+1)" v-for="(item,index) in uRanks" v-if="index < 3">
+                            <div class="avatar_box">
+                                <div class="crown"></div>
+                                <div class="avatar_wrap">
+                                    <img :src="item.head_pic_1" class="avatar">
+                                </div>
+                                <span class="index"></span>
+                            </div>
+                            <div class="info">
+                                <p class="nickname">{{item.nickname}}</p>
+                                <p class="giftnum">送出 {{item.num}}</p>
+                            </div>
+                        </li>
+                    </ul>
+                    <ul class="last_list user-last-list">
+                        <li v-for="(item,index) in uRanks" v-if="index >= 3">
+                            <span class="index">{{index+1}}</span>
+                            <div class="avatar_box">
+                                <div class="avatar_wrap">
+                                    <img :src="item.head_pic_1" class="avatar">
+                                </div>
+                            </div>
+                            <p class="info">
+                                <span class="nickname">{{item.nickname}}</span>
+                                <span class="giftnum">送出 {{item.num}}</span>
+                            </p>
+                        </li>
+                    </ul>
+                    <div class="cashback">
+                        <table class="table">
+                            <tr>
+                                <th>排名</th>
+                                <th>返利</th>
+                            </tr>
+                            <tr>
+                                <td>1</td>
+                                <td>5%</td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td>4%</td>
+                            </tr>
+                            <tr>
+                                <td>3</td>
+                                <td>3%</td>
+                            </tr>
+                            <tr>
+                                <td>4-5</td>
+                                <td>2%</td>
+                            </tr>
+                        </table>
+                        <p class="explain bold">元气满满榜和聚宝盆榜单排名前五名即可获得丰厚奖励！</p>
+                        <p class="explain">（返利数量=用户榜单数量*返利额度）</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+<script>
+    var gjShareParam = JSON.stringify({
+        title: '旺财来啦！',
+        content: '星光送礼，让你新年旺到爽！',
+        link: location.href,
+        imgLink: '${require("../../../../static_guojiang_tv/src/mobile/v2/img/activity/wangcai/share.jpg")}'
+    });
+
+</script>
