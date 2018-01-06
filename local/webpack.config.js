@@ -18,38 +18,83 @@ const HashedChunkIdsPlugin = require('./config/hashedChunkIdsPlugin.js');
 
 
 //生产与开发环境配置
-//var glob = require('glob');
+var glob = require('glob');
 //是否是生产环境
 var prod = process.env.NODE_ENV === 'production' ? true : false;
+//是否是pc编译
+var isPc = process.env.PLATFORM == 'pc' ? true : false;
 
-//项目目录配置
-var entryDir = './src/mobile/v1/js/*.js';
-var outputDir = './dist/mobile/v1/';
-     //var outputDir = path.resolve(__dirname, './static_guojiang_tv/mobile/v2');
-var outputPublicDir = 'http://static.cblive.tv/mobile/v1/';
+//webpack配置
+var eslintConfigDir = prod ? './webpack-config/.eslintrc.js' : './config/.eslintrc.dev.js';
+var postcssConfigDir = './config/postcss.config.js';
+var resolveConfigDir = './config/resolve.config.js';
 
-// var basePageDir = 'html/mobile';
-// var basePageEntry = './' + basePageDir + '/';
-// var browserSyncBaseDir = './' + basePageDir + '/dist';
+//忽略不必要编译的文件
+//var entryIgnore = require('./entryignore.json');
 
-//clean folder
-var cleanDir = [
-    path.resolve(__dirname, './dist/mobile/v1/html'),
-    path.resolve(__dirname, './dist/mobile/v1/css'),
-    path.resolve(__dirname, './dist/mobile/v1/js')
-];
 
-//var dll_manifest_name = 'dll_manifest';
+
+if (isPc) {
+    //pc版目录配置
+    console.log('***********************PC编译*************************');
+
+    var baseEntryDir = './static_guojiang_tv/src/pc/v4/';
+    var entryDir = baseEntryDir + '**/*.js';
+    var outDir = path.resolve(__dirname, './static_guojiang_tv/pc/v4');
+    var outPublicDir = 'http://static.guojiang.tv/pc/v4/';
+    var basePageDir = 'html/pc';
+    var basePageEntry = './' + basePageDir + '/';
+    var browserSyncBaseDir = './' + basePageDir + '/dist';
+    //clean folder
+    var cleanFolder = [
+        path.resolve(__dirname, './html/pc/dist'),
+        path.resolve(__dirname, './static_guojiang_tv/pc/v4/css'),
+        path.resolve(__dirname, './static_guojiang_tv/pc/v4/js')
+    ];
+    var cleanMaps = [
+        path.resolve(__dirname, './static_guojiang_tv/pc/v4/js/**/*.map')
+    ]
+
+    var dll_manifest_name = 'dll_manifest_pc';
+} else {
+    //触屏版目录配置
+    console.log('***********************APP编译*************************');
+
+    var baseEntryDir = './src/app/v1/';
+    var entryDir = baseEntryDir + '**/*.js';
+    var outDir = './dist/app/v1';
+    var outPublicDir = 'http://static.joylive.tv/app/v1/';
+
+    var basePageDir = 'html/app';
+    var basePageEntry = './' + basePageDir + '/';
+    var browserSyncBaseDir = './' + basePageDir + '/dist';
+    //clean folder
+    var cleanDir = [
+        path.resolve(__dirname, './dist/app/v1/html'),
+        path.resolve(__dirname, './dist/app/v1/css'),
+        path.resolve(__dirname, './dist/app/v1/js')
+    ];
+
+    var cleanMaps = [
+        path.resolve(__dirname, './dist/app/v1/**/*.map')
+    ]
+
+    var dll_manifest_name = 'dll_manifest';
+}
 
 //入口js文件配置以及公共模块配置
 var entries = getEntry(entryDir);
-entries.vendors = ['common', 'wxShare'];
+entries.vendors = ['common'];
+// if(isPc){
+// }else{
+// entries.vendors = ['common'];
+// }
 
 console.log(entries);
 
 module.exports = {
     /* 输入文件 */
-    //resolve: require(resolveConfigDir),
+    resolve: require(resolveConfigDir),
     entry: entries,
     output: {
         path: outputDir,
@@ -165,6 +210,66 @@ module.exports = {
         ])
     ]
 };
+
+/***** 生成组合后的html *****/
+
+var pages = getEntry(basePageEntry + 'src/**/*.ejs');
+for (var pathname in pages) {
+
+    var conf = {
+        filename: path.resolve(__dirname, basePageEntry + 'dist/' + pathname + '.html'), // html文件输出路径
+        template: path.resolve(__dirname, basePageEntry + 'src/' + pathname + '.js'),
+        inject: true,
+        cache: true, //只改动变动的文件
+        minify: {
+            removeComments: true,
+            collapseWhitespace: false
+        }
+    };
+    if (pathname in module.exports.entry) {
+        conf.chunks = [pathname, 'vendors'];
+    } else {
+        conf.chunks = ['vendors'];
+    }
+
+    module.exports.plugins.push(new htmlWebpackPlugin(conf));
+}
+
+
+/**
+ * [获取文件列表(仅支持js和ejs文件)：输出正确的js和html路径]
+ * @param  {[type]} globPath [description]
+ * @return {[type]}          [description]
+ */
+function getEntry(globPath) {
+    var entries = {},
+        basename;
+
+    glob.sync(globPath).forEach(function(entry) {
+
+        //排出layouts内的公共文件
+        if (entry.indexOf('layouts') == -1 && entry.indexOf('lib') == -1 && entry.indexOf('component') == -1) {
+
+            //判断是js文件还是ejs模板文件
+            let isJsFile = entry.indexOf('.js') !== -1;
+            let dirArr = isJsFile ?
+                entry.split('/js/')[1].split('.js')[0].split('/') :
+                entry.split(basePageDir + '/src/')[1].split('.ejs')[0].split('/');
+
+            basename = dirArr.join('/');
+
+            if (entryIgnore.indexOf(basename) == -1) {
+                entries[basename] = entry;
+            }
+
+        }
+    });
+
+    console.log(entries);
+
+    return entries;
+}
+
 
 /***** 区分开发环境和生产环境 *****/
 
