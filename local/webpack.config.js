@@ -17,7 +17,7 @@ const HashedChunkIdsPlugin = require('./config/hashedChunkIdsPlugin.js');
 // const BrowserSyncPlugin = require('browser-sync-webpack-plugin');
 
 
-//生产与开发环境配置
+//路径模式匹配模块glob
 var glob = require('glob');
 //是否是生产环境
 var prod = process.env.NODE_ENV === 'production' ? true : false;
@@ -25,12 +25,12 @@ var prod = process.env.NODE_ENV === 'production' ? true : false;
 var isPc = process.env.PLATFORM == 'pc' ? true : false;
 
 //webpack配置
-var eslintConfigDir = prod ? './webpack-config/.eslintrc.js' : './config/.eslintrc.dev.js';
+var eslintConfigDir = prod ? './config/.eslintrc.js' : './config/.eslintrc.dev.js';
 var postcssConfigDir = './config/postcss.config.js';
 var resolveConfigDir = './config/resolve.config.js';
 
 //忽略不必要编译的文件
-//var entryIgnore = require('./entryignore.json');
+// var entryIgnore = require('./entryignore.json');
 
 
 
@@ -58,25 +58,25 @@ if (isPc) {
     var dll_manifest_name = 'dll_manifest_pc';
 } else {
     //触屏版目录配置
-    console.log('***********************APP编译*************************');
+    console.log('***********************触屏版编译*************************');
 
-    var baseEntryDir = './src/app/v1/';
+    var baseEntryDir = './src/mobile/v1/';
     var entryDir = baseEntryDir + '**/*.js';
-    var outDir = './dist/app/v1';
-    var outPublicDir = 'http://static.joylive.tv/app/v1/';
+    var outDir = './dist/mobile/v1';
+    var outPublicDir = 'http://static.joylive.tv/mobile/v1/';
 
-    var basePageDir = 'html/app';
-    var basePageEntry = './' + basePageDir + '/';
+    var basePageDir = 'html';
+    var basePageEntry = './src/mobile/v1/' + basePageDir + '/';
     var browserSyncBaseDir = './' + basePageDir + '/dist';
     //clean folder
     var cleanDir = [
-        path.resolve(__dirname, './dist/app/v1/html'),
-        path.resolve(__dirname, './dist/app/v1/css'),
-        path.resolve(__dirname, './dist/app/v1/js')
+        path.resolve(__dirname, './dist/mobile/v1/html'),
+        path.resolve(__dirname, './dist/mobile/v1/css'),
+        path.resolve(__dirname, './dist/mobile/v1/js')
     ];
 
     var cleanMaps = [
-        path.resolve(__dirname, './dist/app/v1/**/*.map')
+        path.resolve(__dirname, './dist/mobile/v1/**/*.map')
     ]
 
     var dll_manifest_name = 'dll_manifest';
@@ -84,11 +84,11 @@ if (isPc) {
 
 //入口js文件配置以及公共模块配置
 var entries = getEntry(entryDir);
-entries.vendors = ['common'];
-// if(isPc){
-// }else{
-// entries.vendors = ['common'];
-// }
+if (isPc) {
+    entries.vendors = ['common'];
+} else {
+    entries.vendors = ['common'];
+}
 
 console.log(entries);
 
@@ -118,62 +118,54 @@ module.exports = {
     },
     module: {
         rules: [{
-                test: /\.vue$/,
-                loader: 'vue-loader',
-                options: {
-                    postcss: [require(postcssConfigDir)]
-                }
-            },
-            {
-                test: /\.ejs$/,
-                loader: 'ejs-loader'
-            },
-            {
-                test: /\.js$/,
-                enforce: 'pre',
-                loader: 'eslint-loader',
-                include: path.resolve(__dirname, entryDir),
-                exclude: [baseEntryDir + 'js/lib', baseEntryDir + 'js/component'],
-                options: {
-                    fix: true
-                }
-            },
-            {
-                test: /\.js$/,
-                loader: 'babel-loader',
-                exclude: ['node_modules', baseEntryDir + 'js/lib', baseEntryDir + 'js/component']
-            },
-            {
-                test: /\.css$/,
-                use: ['style-loader', 'css-loader', 'postcss-loader'],
-                exclude: [baseEntryDir + 'css/lib']
-            },
-            {
-                test: /\.less$/,
-                use: ExtractTextPlugin.extract(['css-loader', 'postcss-loader', 'less-loader']),
-            },
-            {
-                test: /\.(png|jpg|gif)$/,
-                loader: 'url-loader',
-                options: {
-                    limit: 5120,
-                    name: function(p) {
-                        let tem_path = p.split(/\\img\\/)[1];
-                        tem_path = tem_path.replace(/\\/g, '/');
-                        return 'img/' + tem_path + '?v=[hash:8]';
-                    }
-                }
-            },
-            {
-                test: /\.html$/,
-                use: [{
-                    loader: 'html-loader',
-                    options: {
-                        minimize: true
-                    }
-                }],
+            test: /\.vue$/,
+            loader: 'vue-loader',
+            options: {
+                postcss: [require(postcssConfigDir)]
             }
-        ]
+        }, {
+            test: /\.ejs$/,
+            loader: 'ejs-loader'
+        }, {
+            test: /\.js$/,
+            enforce: 'pre',
+            loader: 'eslint-loader',
+            include: path.resolve(__dirname, entryDir),
+            exclude: [baseEntryDir + 'js/lib', baseEntryDir + 'js/component'],
+            options: {
+                fix: true
+            }
+        }, {
+            test: /\.js$/,
+            loader: 'babel-loader',
+            exclude: ['node_modules', baseEntryDir + 'js/lib', baseEntryDir + 'js/component']
+        }, {
+            test: /\.css$/,
+            use: ['style-loader', 'css-loader', 'postcss-loader'],
+            exclude: [baseEntryDir + 'css/lib']
+        }, {
+            test: /\.less$/,
+            use: ExtractTextPlugin.extract(['css-loader', 'postcss-loader', 'less-loader']),
+        }, {
+            test: /\.(png|jpg|gif)$/,
+            loader: 'url-loader',
+            options: {
+                limit: 5120,
+                name: function(p) {
+                    let tem_path = p.split(/\\img\\/)[1];
+                    tem_path = tem_path.replace(/\\/g, '/');
+                    return 'img/' + tem_path + '?v=[hash:8]';
+                }
+            }
+        }, {
+            test: /\.html$/,
+            use: [{
+                loader: 'html-loader',
+                options: {
+                    minimize: true
+                }
+            }],
+        }]
     },
     plugins: [
         new HashedChunkIdsPlugin(),
@@ -244,13 +236,13 @@ for (var pathname in pages) {
 function getEntry(globPath) {
     var entries = {},
         basename;
-
     glob.sync(globPath).forEach(function(entry) {
+        console.log(entry);
 
-        //排出layouts内的公共文件
-        if (entry.indexOf('layouts') == -1 && entry.indexOf('lib') == -1 && entry.indexOf('component') == -1) {
+        // //排出layouts内的公共文件
+        if (entry.indexOf('layouts') == -1 && entry.indexOf('lib') == -1 && entry.indexOf('components') == -1) {
 
-            //判断是js文件还是ejs模板文件
+            //判断是js文件还是html模板文件
             let isJsFile = entry.indexOf('.js') !== -1;
             let dirArr = isJsFile ?
                 entry.split('/js/')[1].split('.js')[0].split('/') :
@@ -266,7 +258,6 @@ function getEntry(globPath) {
     });
 
     console.log(entries);
-
     return entries;
 }
 
