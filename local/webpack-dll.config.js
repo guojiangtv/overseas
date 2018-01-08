@@ -23,7 +23,7 @@ if (isPc) {
     var entryDir = baseEntryDir + '**/*.js';
     var outDir = path.resolve(__dirname, './src/mobile/v1');
     var outPublicDir = 'http://static.cblive.tv/dist/mobile/v1/';
-    var entries = ['vue', 'axios', 'flexible'];
+    var entries = ['vue', 'axios', 'flexible','webpack-zepto'];
     var dll_manifest_name = 'dll_manifest';
 }
 
@@ -47,7 +47,7 @@ module.exports = {
                 enforce: 'pre',
                 loader: 'eslint-loader',
                 include: path.resolve(__dirname, entryDir),
-                exclude: ['node_modules', baseEntryDir + 'js/lib', baseEntryDir + 'js/component'],
+                exclude: [baseEntryDir + 'js/lib', baseEntryDir + 'js/component'],
                 options: {
                     fix: true
                 }

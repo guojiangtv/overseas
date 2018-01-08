@@ -14,7 +14,6 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 const HashedChunkIdsPlugin = require('./config/hashedChunkIdsPlugin.js');
 
-// const BrowserSyncPlugin = require('browser-sync-webpack-plugin');
 
 
 //路径模式匹配模块glob
@@ -60,13 +59,16 @@ if (isPc) {
     //触屏版目录配置
     console.log('***********************触屏版编译*************************');
 
-    var baseEntryDir = './src/mobile/v1/';
+    var baseEntryDir = './src/mobile/v1/js/';
     var entryDir = baseEntryDir + '**/*.js';
-    var outDir = './dist/mobile/v1';
-    var outPublicDir = 'http://static.joylive.tv/mobile/v1/';
+    // The output directory as **absolute path** (required).
+    var outputDir = path.resolve(__dirname, './dist/mobile/v1');
+    var outputPublicDir = 'http://m.joylive.tv:3000/';
+    // var outputPublicDir = '/v1/js/';
 
     var basePageDir = 'html';
     var basePageEntry = './src/mobile/v1/' + basePageDir + '/';
+    var basePageOutput = './dist/mobile/v1/' + basePageDir + '/';
     var browserSyncBaseDir = './' + basePageDir + '/dist';
     //clean folder
     var cleanDir = [
@@ -104,17 +106,20 @@ module.exports = {
     // webpack-dev-server配置 详见https://webpack.js.org/configuration/dev-server/
     devServer: {
         //设置服务器主文件夹，默认情况下，从项目的根目录提供文件
-        contentBase: path.join(__dirname, "dist"),
+        contentBase: path.join(__dirname, "dist/mobile/v1/"),
         //使用inlilne模式
-        inline: true,
+        //inline: true,
+        hot:true,
+        open: true,
+        compress:true,
         //当编译错误的时候，网页上显示错误信息
-        overlay: {
-            warnings: true,
-            errors: true
-        },
+        // overlay: {
+        //     warnings: true,
+        //     errors: true
+        // },
         //设置域名，默认是localhost
-        // host: "10.74.138.249",
-        // port: 3000
+        host: "m.joylive.tv",
+        port: 3000
     },
     module: {
         rules: [{
@@ -171,15 +176,13 @@ module.exports = {
         new HashedChunkIdsPlugin(),
         new webpack.HashedModuleIdsPlugin(),
         new webpack.DllReferencePlugin({
-            context: __dirname, // 指定一个路径作为上下文环境，需要与DllPlugin的context参数保持一致，建议统一设置为项目根目录
-            manifest: require('./' + dll_manifest_name + '.json'), // 指定manifest.json
-            name: 'dll_library', // 当前Dll的所有内容都会存放在这个参数指定变量名的一个全局变量下，注意与DllPlugin的name参数保持一致
+            // 指定一个路径作为上下文环境，需要与DllPlugin的context参数保持一致，建议统一设置为项目根目录
+            context: __dirname,
+            // 指定manifest.json
+            manifest: require('./' + dll_manifest_name + '.json'),
+            // 当前Dll的所有内容都会存放在这个参数指定变量名的一个全局变量下，注意与DllPlugin的name参数保持一致
+            name: 'dll_library',
         }),
-        // new BrowserSyncPlugin({
-        //     host: 'm.tuho.tv',
-        //     port: 3000,
-        //     server: { baseDir: [browserSyncBaseDir] }
-        // }),
 
         new ExtractTextPlugin('css/[name].css?v=[contenthash:8]'),
 
@@ -198,19 +201,21 @@ module.exports = {
             minChunks: Infinity //公共模块最小被引用的次数
         }),
         new CopyWebpackPlugin([
-            { from: baseEntryDir + 'js/lib', to: 'js/lib' },
+            { from: baseEntryDir + '/lib', to: outputDir + '/js/lib' },
         ])
     ]
 };
 
 /***** 生成组合后的html *****/
 
-var pages = getEntry(basePageEntry + 'src/**/*.ejs');
+var pages = getEntry(basePageEntry + '**/*.ejs');
 for (var pathname in pages) {
-
+    console.log(pathname);
     var conf = {
-        filename: path.resolve(__dirname, basePageEntry + 'dist/' + pathname + '.html'), // html文件输出路径
-        template: path.resolve(__dirname, basePageEntry + 'src/' + pathname + '.js'),
+        // html模板文件输入路径
+        template: path.resolve(__dirname, basePageEntry + pathname + '.js'),
+        // html文件输出路径
+        filename: path.resolve(__dirname, basePageOutput + pathname + '.html'),
         inject: true,
         cache: true, //只改动变动的文件
         minify: {
@@ -218,6 +223,7 @@ for (var pathname in pages) {
             collapseWhitespace: false
         }
     };
+
     if (pathname in module.exports.entry) {
         conf.chunks = [pathname, 'vendors'];
     } else {
@@ -246,13 +252,13 @@ function getEntry(globPath) {
             let isJsFile = entry.indexOf('.js') !== -1;
             let dirArr = isJsFile ?
                 entry.split('/js/')[1].split('.js')[0].split('/') :
-                entry.split(basePageDir + '/src/')[1].split('.ejs')[0].split('/');
+                entry.split(basePageDir)[1].split('.ejs')[0].split('/');
 
             basename = dirArr.join('/');
 
-            if (entryIgnore.indexOf(basename) == -1) {
-                entries[basename] = entry;
-            }
+            // if (entryIgnore.indexOf(basename) == -1) {
+            entries[basename] = entry;
+            // }
 
         }
     });

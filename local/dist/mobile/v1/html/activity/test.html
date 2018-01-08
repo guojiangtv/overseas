@@ -8,23 +8,24 @@
         <meta name="apple-mobile-web-app-status-bar-style" content="black">
         <meta name="format-detection" content="telephone=no">
         <meta name="wap-font-scale" content="no">
-        <meta name="apple-itunes-app" content="app-id=1172175752, app-argument=tv.guojiang.tuhaotimes://m.<%= app.domain %>/444444">
-        <% if(app.packageId == 1){ %>
-        <link rel="shortcut icon" href="http://static.<%= app.domain %>/dist/mobile/img/common/gogolive/title_icon.png?v=085b901a7e" type="image/x-icon">
-        <link rel="apple-touch-icon" href="http://static.<%= app.domain %>/dist/mobile/img/common/gogolive/touch_icon.png?v=a15b4ac598" sizes="144x144">
-        <% }else{ %>
-        <link rel="shortcut icon" href="http://static.<%= app.domain %>/dist/mobile/img/common/title_icon.png?v=fc7136bd6e" type="image/x-icon">
-        <link rel="apple-touch-icon" href="http://static.<%= app.domain %>/dist/mobile/img/common/touch_icon.png" sizes="144x144">
-        <% } %>
-        <title><%= app.pageTitle %></title>
+        <meta name="apple-itunes-app" content="app-id=1172175752, app-argument=tv.guojiang.tuhaotimes://m.joylive.tv/444444">
+        
+        <link rel="shortcut icon" href="http://static.joylive.tv/dist/mobile/img/common/title_icon.png?v=fc7136bd6e" type="image/x-icon">
+        <link rel="apple-touch-icon" href="http://static.joylive.tv/dist/mobile/img/common/touch_icon.png" sizes="144x144">
+        
+        <title>test</title>
     </head>
 
 <body>
 
-    <%= content %>
+    <main id="app" v-cloak>
+    this is a test12
+</main>
 
-    <script type="text/javascript" src="http://m.<%= app.domain %>:3000/js/lib/dll.js"></script>
-    <script type="text/javascript" src="http://m.<%= app.domain %>:3000/js/manifest.js"></script>
+
+
+    <script type="text/javascript" src="http://static.joylive.tv/js/lib/dll.js"></script>
+    <script type="text/javascript" src="http://static.joylive.tv/js/manifest.js"></script>
     <script type="text/javascript">
         var _czc = _czc || [];
         _czc.push(["_setAccount", "1271582395"]);
@@ -36,6 +37,6 @@
         document.write(unescape("<span id='cnzz_stat_icon_1271582395'></span><script src='" + cnzz_protocol + "s22.cnzz.com/z_stat.php?id=1271582395' type='text/javascript'><\/script>"));
         </script>
     </div>
-</body>
+<script type="text/javascript" src="http://m.joylive.tv:3000/js/vendors.js?v=33e520be"></script></body>
 </html>
 
