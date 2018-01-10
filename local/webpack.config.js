@@ -69,7 +69,7 @@ if (isPc) {
     var basePageDir = 'html';
     var basePageEntry = './src/mobile/v1/' + basePageDir + '/';
     var basePageOutput = './dist/mobile/v1/' + basePageDir + '/';
-    var browserSyncBaseDir = './' + basePageDir + '/dist';
+    //var browserSyncBaseDir = './' + basePageDir + '/dist';
     //clean folder
     var cleanDir = [
         path.resolve(__dirname, './dist/mobile/v1/html'),
@@ -92,7 +92,7 @@ if (isPc) {
     entries.vendors = ['common'];
 }
 
-console.log(entries);
+//console.log(entries);
 
 module.exports = {
     /* 输入文件 */
@@ -184,8 +184,8 @@ module.exports = {
             name: 'dll_library',
         }),
 
-        new ExtractTextPlugin('css/[name].css?v=[contenthash:8]'),
 
+        new ExtractTextPlugin('css/[name].css?v=[contenthash:8]'),
         new webpack.LoaderOptionsPlugin({
             options: {
                 eslint: require(eslintConfigDir),
@@ -200,9 +200,12 @@ module.exports = {
             chunks: 'vendors', // chunks是需要提取的模块
             minChunks: Infinity //公共模块最小被引用的次数
         }),
+
         new CopyWebpackPlugin([
             { from: baseEntryDir + '/lib', to: outputDir + '/js/lib' },
         ])
+
+
     ]
 };
 
@@ -224,11 +227,11 @@ for (var pathname in pages) {
         }
     };
 
-    if (pathname in module.exports.entry) {
-        conf.chunks = [pathname, 'vendors'];
-    } else {
-        conf.chunks = ['vendors'];
-    }
+    // if (pathname in module.exports.entry) {
+    //     conf.chunks = [pathname, 'vendors'];
+    // } else {
+    //     conf.chunks = ['vendors'];
+    // }
 
     module.exports.plugins.push(new htmlWebpackPlugin(conf));
 }
@@ -243,7 +246,7 @@ function getEntry(globPath) {
     var entries = {},
         basename;
     glob.sync(globPath).forEach(function(entry) {
-        console.log(entry);
+        //console.log(entry);
 
         // //排出layouts内的公共文件
         if (entry.indexOf('layouts') == -1 && entry.indexOf('lib') == -1 && entry.indexOf('components') == -1) {
