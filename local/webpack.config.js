@@ -104,23 +104,37 @@ module.exports = {
         filename: 'js/[name].js?v=[chunkhash:8]'
     },
     // webpack-dev-server配置 详见https://webpack.js.org/configuration/dev-server/
-    devServer: {
-        //设置服务器主文件夹，默认情况下，从项目的根目录提供文件
-        contentBase: path.join(__dirname, "dist/mobile/v1/"),
-        //使用inlilne模式
-        //inline: true,
-        hot:true,
-        open: true,
-        compress:true,
-        //当编译错误的时候，网页上显示错误信息
-        // overlay: {
-        //     warnings: true,
-        //     errors: true
-        // },
-        //设置域名，默认是localhost
-        host: "m.joylive.tv",
-        port: 3000
-    },
+    // devServer: {
+    //     clientLogLevel: 'warning',
+    //     //设置服务器主文件夹，默认情况下，从项目的根目录提供文件
+    //     contentBase: path.join(__dirname, "dist/mobile/v1/"),
+    //     //使用inlilne模式
+    //     //inline: true,
+    //     hot:true,
+    //     open: true,
+    //     compress:true,
+    //     //当编译错误的时候，网页上显示错误信息
+    //     overlay: {
+    //         warnings: true,
+    //         errors: true
+    //     },
+    //     //设置域名，默认是localhost
+    //     host: "m.joylive.tv",
+    //     port: 3000
+
+    //     // historyApiFallback: {
+    //     //   rewrites: [
+    //     //     { from: /.*/, to: path.posix.join(config.dev.assetsPublicPath, 'index.html') },
+    //     //   ],
+    //     // },
+
+    //     // publicPath: config.dev.assetsPublicPath,
+    //     // proxy: config.dev.proxyTable,
+    //     // quiet: true, // necessary for FriendlyErrorsPlugin
+    //     // watchOptions: {
+    //     //   poll: config.dev.poll,
+    //     // }
+    // },
     module: {
         rules: [{
             test: /\.vue$/,
@@ -201,10 +215,11 @@ module.exports = {
             minChunks: Infinity //公共模块最小被引用的次数
         }),
 
-        new CopyWebpackPlugin([
-            { from: baseEntryDir + '/lib', to: outputDir + '/js/lib' },
-        ])
+        // new CopyWebpackPlugin([
+        //     { from: baseEntryDir + '/lib', to: outputDir + '/js/lib' },
+        // ]),
 
+        //new webpack.HotModuleReplacementPlugin()
 
     ]
 };
@@ -213,7 +228,7 @@ module.exports = {
 
 var pages = getEntry(basePageEntry + '**/*.ejs');
 for (var pathname in pages) {
-    console.log(pathname);
+    //console.log(pathname);
     var conf = {
         // html模板文件输入路径
         template: path.resolve(__dirname, basePageEntry + pathname + '.js'),
@@ -226,12 +241,12 @@ for (var pathname in pages) {
             collapseWhitespace: false
         }
     };
-
-    // if (pathname in module.exports.entry) {
-    //     conf.chunks = [pathname, 'vendors'];
-    // } else {
-    //     conf.chunks = ['vendors'];
-    // }
+    //根据chunks提取页面js,css和公共verdors
+    if (pathname in module.exports.entry) {
+        conf.chunks = [pathname, 'vendors'];
+    } else {
+        conf.chunks = ['vendors'];
+    }
 
     module.exports.plugins.push(new htmlWebpackPlugin(conf));
 }
@@ -255,7 +270,7 @@ function getEntry(globPath) {
             let isJsFile = entry.indexOf('.js') !== -1;
             let dirArr = isJsFile ?
                 entry.split('/js/')[1].split('.js')[0].split('/') :
-                entry.split(basePageDir)[1].split('.ejs')[0].split('/');
+                entry.split('/html/')[1].split('.ejs')[0].split('/');
 
             basename = dirArr.join('/');
 

@@ -5,7 +5,8 @@
   "main": "webpack.config.js",
   "scripts": {
     "dll": "webpack --progress --colors --config ./webpack-dll.config.js",
-    "watch": "webpack --progress",
+    "dev": "webpack-dev-server --inline --progress",
+    "watch": "webpack --progress --watch",
     "pc_dll": "set PLATFORM=pc&&webpack --progress --colors --config ./webpack-dll.config.js"
   },
   "author": "Jesse",
@@ -39,6 +40,6 @@
     "vue-loader": "^13.6.2",
     "vue-template-compiler": "^2.5.13",
     "webpack": "^3.10.0",
-    "webpack-dev-server": "2.9.7"
+    "webpack-dev-server": "2.9.1"
   }
 }
