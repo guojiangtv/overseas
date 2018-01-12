@@ -1,4 +1,24 @@
 require('../../css/activity/test.less');
 
+import Vue from 'vue';
+import axios from 'axios';
+import $ from 'webpack-zepto';
 
-console.log('test');
+new Vue({
+    el: '#app',
+    data: {
+        rules:true
+    },
+    computed: {
+
+    },
+    created: function() {
+
+    },
+    mounted: function() {
+        console.log(axios);
+    },
+    methods: {
+
+    }
+})

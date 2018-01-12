@@ -82,6 +82,9 @@ module.exports = {
         }, {
             test: /\.js$/,
             loader: 'babel-loader',
+            options: {
+                presets: ['env']
+            },
             exclude: ['node_modules', baseEntryDir + 'js/lib', baseEntryDir + 'js/component']
         }, {
             test: /\.css$/,
@@ -113,9 +116,9 @@ module.exports = {
     },
     plugins: [
         //将dll.js文件移到dist文件夹内
-        new CopyWebpackPlugin([
-            { from: baseEntryDir + '/lib', to: outputDir + '/js/lib' },
-        ]),
+        // new CopyWebpackPlugin([
+        //     { from: baseEntryDir + '/lib', to: outputDir + '/js/lib' },
+        // ]),
 
         new HashedChunkIdsPlugin(),
         new webpack.HashedModuleIdsPlugin(),

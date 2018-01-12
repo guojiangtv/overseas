@@ -10,7 +10,7 @@ var prod = process.env.NODE_ENV === 'production' ? true : false;
 var resolveConfigDir = './config/resolve.config.js';
 
 var baseEntryDir = './src/mobile/';
-var outputDir = path.resolve(__dirname, './src/mobile/');
+var outputDir = path.resolve(__dirname, './dist/mobile/');
 var outputPublicDir = 'http://static.joylive.tv/dist/mobile/';
 var entries = ['vue', 'axios', 'flexible', 'webpack-zepto'];
 var dll_manifest_name = 'dll_manifest';
@@ -47,8 +47,8 @@ module.exports = {
         ]
     },
     plugins: [
+        new CleanWebpackPlugin(['./dist/mobile/js/lib']),
         //keep module.id stable when vender modules does not change
-        new CleanWebpackPlugin(['./src/mobile/js/lib']),
         new HashedChunkIdsPlugin(),
         new webpack.HashedModuleIdsPlugin(),
         new webpack.DllPlugin({

@@ -1,4 +1,7 @@
+import '../../css/common/common.less';
 import $ from 'webpack-zepto';
+import flexible from 'flexible';
+
 
 //微信分享结果回调
 exports.onWxShareSuccess = function(data) {
