@@ -1,4 +1,3 @@
-// 引入操作路径模块和webpack及所需的插件
 const path = require("path");
 const webpack = require('webpack');
 //html模板插件 详见https://www.npmjs.com/package/html-webpack-plugin
@@ -20,8 +19,6 @@ const HashedChunkIdsPlugin = require('./config/hashedChunkIdsPlugin.js');
 var glob = require('glob');
 //是否是生产环境
 var prod = process.env.NODE_ENV === 'production' ? true : false;
-//是否是pc编译
-var isPc = process.env.PLATFORM == 'pc' ? true : false;
 
 //webpack配置
 var eslintConfigDir = prod ? './config/.eslintrc.js' : './config/.eslintrc.dev.js';
@@ -32,67 +29,27 @@ var resolveConfigDir = './config/resolve.config.js';
 // var entryIgnore = require('./entryignore.json');
 
 
+//目录配置
+var baseEntryDir = './src/mobile/js/';
+var entryDir = baseEntryDir + '**/*.js';
+var outputDir = path.resolve(__dirname, './dist/mobile/');
+var outputPublicDir = 'http://static.joylive.tv/dist/mobile/';
 
-if (isPc) {
-    //pc版目录配置
-    console.log('***********************PC编译*************************');
+var basePageEntry = './html/src/mobile/';
+var basePageOutput = './html/dist/mobile/';
 
-    var baseEntryDir = './static_guojiang_tv/src/pc/v4/';
-    var entryDir = baseEntryDir + '**/*.js';
-    var outDir = path.resolve(__dirname, './static_guojiang_tv/pc/v4');
-    var outPublicDir = 'http://static.guojiang.tv/pc/v4/';
-    var basePageDir = 'html/pc';
-    var basePageEntry = './' + basePageDir + '/';
-    var browserSyncBaseDir = './' + basePageDir + '/dist';
-    //clean folder
-    var cleanFolder = [
-        path.resolve(__dirname, './html/pc/dist'),
-        path.resolve(__dirname, './static_guojiang_tv/pc/v4/css'),
-        path.resolve(__dirname, './static_guojiang_tv/pc/v4/js')
-    ];
-    var cleanMaps = [
-        path.resolve(__dirname, './static_guojiang_tv/pc/v4/js/**/*.map')
-    ]
 
-    var dll_manifest_name = 'dll_manifest_pc';
-} else {
-    //触屏版目录配置
-    console.log('***********************触屏版编译*************************');
-
-    var baseEntryDir = './src/mobile/v1/js/';
-    var entryDir = baseEntryDir + '**/*.js';
-    // The output directory as **absolute path** (required).
-    var outputDir = path.resolve(__dirname, './dist/mobile/v1');
-    var outputPublicDir = 'http://m.joylive.tv:3000/';
-    // var outputPublicDir = '/v1/js/';
-
-    var basePageDir = 'html';
-    var basePageEntry = './src/mobile/v1/' + basePageDir + '/';
-    var basePageOutput = './dist/mobile/v1/' + basePageDir + '/';
-    //var browserSyncBaseDir = './' + basePageDir + '/dist';
-    //clean folder
-    var cleanDir = [
-        path.resolve(__dirname, './dist/mobile/v1/html'),
-        path.resolve(__dirname, './dist/mobile/v1/css'),
-        path.resolve(__dirname, './dist/mobile/v1/js')
-    ];
-
-    var cleanMaps = [
-        path.resolve(__dirname, './dist/mobile/v1/**/*.map')
-    ]
-
-    var dll_manifest_name = 'dll_manifest';
-}
+//clean folder
+var cleanMaps = [
+    path.resolve(__dirname, './dist/mobile/**/*.map')
+];
+var dll_manifest_name = 'dll_manifest';
 
 //入口js文件配置以及公共模块配置
 var entries = getEntry(entryDir);
-if (isPc) {
-    entries.vendors = ['common'];
-} else {
-    entries.vendors = ['common'];
-}
+entries.vendors = ['common'];
 
-//console.log(entries);
+console.log(entries);
 
 module.exports = {
     /* 输入文件 */
@@ -103,38 +60,6 @@ module.exports = {
         publicPath: outputPublicDir,
         filename: 'js/[name].js?v=[chunkhash:8]'
     },
-    // webpack-dev-server配置 详见https://webpack.js.org/configuration/dev-server/
-    // devServer: {
-    //     clientLogLevel: 'warning',
-    //     //设置服务器主文件夹，默认情况下，从项目的根目录提供文件
-    //     contentBase: path.join(__dirname, "dist/mobile/v1/"),
-    //     //使用inlilne模式
-    //     //inline: true,
-    //     hot:true,
-    //     open: true,
-    //     compress:true,
-    //     //当编译错误的时候，网页上显示错误信息
-    //     overlay: {
-    //         warnings: true,
-    //         errors: true
-    //     },
-    //     //设置域名，默认是localhost
-    //     host: "m.joylive.tv",
-    //     port: 3000
-
-    //     // historyApiFallback: {
-    //     //   rewrites: [
-    //     //     { from: /.*/, to: path.posix.join(config.dev.assetsPublicPath, 'index.html') },
-    //     //   ],
-    //     // },
-
-    //     // publicPath: config.dev.assetsPublicPath,
-    //     // proxy: config.dev.proxyTable,
-    //     // quiet: true, // necessary for FriendlyErrorsPlugin
-    //     // watchOptions: {
-    //     //   poll: config.dev.poll,
-    //     // }
-    // },
     module: {
         rules: [{
             test: /\.vue$/,
@@ -187,6 +112,11 @@ module.exports = {
         }]
     },
     plugins: [
+        //将dll.js文件移到dist文件夹内
+        new CopyWebpackPlugin([
+            { from: baseEntryDir + '/lib', to: outputDir + '/js/lib' },
+        ]),
+
         new HashedChunkIdsPlugin(),
         new webpack.HashedModuleIdsPlugin(),
         new webpack.DllReferencePlugin({
@@ -215,12 +145,6 @@ module.exports = {
             minChunks: Infinity //公共模块最小被引用的次数
         }),
 
-        // new CopyWebpackPlugin([
-        //     { from: baseEntryDir + '/lib', to: outputDir + '/js/lib' },
-        // ]),
-
-        //new webpack.HotModuleReplacementPlugin()
-
     ]
 };
 
@@ -228,7 +152,6 @@ module.exports = {
 
 var pages = getEntry(basePageEntry + '**/*.ejs');
 for (var pathname in pages) {
-    //console.log(pathname);
     var conf = {
         // html模板文件输入路径
         template: path.resolve(__dirname, basePageEntry + pathname + '.js'),
@@ -258,30 +181,27 @@ for (var pathname in pages) {
  * @return {[type]}          [description]
  */
 function getEntry(globPath) {
-    var entries = {},
-        basename;
+    var entries = {};
     glob.sync(globPath).forEach(function(entry) {
-        //console.log(entry);
 
-        // //排出layouts内的公共文件
+        //排出layouts内的公共文件
         if (entry.indexOf('layouts') == -1 && entry.indexOf('lib') == -1 && entry.indexOf('components') == -1) {
 
             //判断是js文件还是html模板文件
             let isJsFile = entry.indexOf('.js') !== -1;
             let dirArr = isJsFile ?
-                entry.split('/js/')[1].split('.js')[0].split('/') :
-                entry.split('/html/')[1].split('.ejs')[0].split('/');
+                entry.split('/js/')[1].split('.js')[0] :
+                entry.split(basePageEntry)[1].split('.ejs')[0];
 
-            basename = dirArr.join('/');
+            // basename = dirArr.join('/');
 
             // if (entryIgnore.indexOf(basename) == -1) {
-            entries[basename] = entry;
+            entries[dirArr] = entry;
             // }
 
         }
     });
 
-    console.log(entries);
     return entries;
 }
 
@@ -290,7 +210,6 @@ function getEntry(globPath) {
 
 if (prod) {
     console.log('当前编译环境：production');
-    //module.exports.devtool = 'module-cheap-source-map'
     module.exports.plugins = module.exports.plugins.concat([
         new CleanWebpackPlugin(cleanDir),
         //压缩css代码

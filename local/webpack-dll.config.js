@@ -1,31 +1,19 @@
 var path = require('path');
 var webpack = require('webpack');
-var ExtractTextPlugin = require('extract-text-webpack-plugin');
-var OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+const CleanWebpackPlugin = require('clean-webpack-plugin');
 var HashedChunkIdsPlugin = require('./config/hashedChunkIdsPlugin.js');
 
-//是否是pc编译
-var isPc = process.env.PLATFORM == 'pc' ? true : false;
+//是否是生产环境
+var prod = process.env.NODE_ENV === 'production' ? true : false;
 
 //webpack配置
-//var postcssConfigDir = './config/postcss.config.js';
 var resolveConfigDir = './config/resolve.config.js';
 
-if (isPc) {
-    var baseEntryDir = './static_guojiang_tv/src/pc/v4/';
-    var entryDir = baseEntryDir + '**/*.js';
-    var outDir = path.resolve(__dirname, './static_guojiang_tv/src/pc/v4');
-    var outPublicDir = 'http://static.guojiang.tv/pc/v4/';
-    var entries = ['vue', 'axios', 'layer', 'jquery'];
-    var dll_manifest_name = 'dll_manifest_pc';
-} else {
-    var baseEntryDir = './src/mobile/v1/';
-    var entryDir = baseEntryDir + '**/*.js';
-    var outDir = path.resolve(__dirname, './src/mobile/v1');
-    var outPublicDir = 'http://static.cblive.tv/dist/mobile/v1/';
-    var entries = ['vue', 'axios', 'flexible','webpack-zepto'];
-    var dll_manifest_name = 'dll_manifest';
-}
+var baseEntryDir = './src/mobile/';
+var outputDir = path.resolve(__dirname, './src/mobile/');
+var outputPublicDir = 'http://static.joylive.tv/dist/mobile/';
+var entries = ['vue', 'axios', 'flexible', 'webpack-zepto'];
+var dll_manifest_name = 'dll_manifest';
 
 
 module.exports = {
@@ -35,8 +23,8 @@ module.exports = {
         dll: entries
     },
     output: {
-        path: outDir,
-        publicPath: outPublicDir,
+        path: outputDir,
+        publicPath: outputPublicDir,
         filename: 'js/lib/[name].js?v=[chunkhash:8]',
         library: '[name]_library',
         /*libraryTarget: 'umd'*/
@@ -46,56 +34,21 @@ module.exports = {
                 test: /\.js$/,
                 enforce: 'pre',
                 loader: 'eslint-loader',
-                include: path.resolve(__dirname, entryDir),
-                exclude: [baseEntryDir + 'js/lib', baseEntryDir + 'js/component'],
+                // include: path.resolve(__dirname, entryDir),
+                // exclude: [baseEntryDir + 'js/lib', baseEntryDir + 'js/component'],
                 options: {
                     fix: true
                 }
-            },
-            {
+            },{
                 test: /\.js$/,
                 loader: 'babel-loader',
-                exclude: ['node_modules', baseEntryDir + 'js/lib', baseEntryDir + 'js/component']
+                // exclude: ['node_modules', baseEntryDir + 'js/lib', baseEntryDir + 'js/component']
             }
-            // ,{
-            //     test: /\.css$/,
-            //     use: ['style-loader', 'css-loader', 'postcss-loader'],
-            //     exclude: [baseEntryDir + 'css/lib']
-            // }
         ]
     },
     plugins: [
-        new webpack.DefinePlugin({
-            'process.env': {
-                NODE_ENV: '"production"'
-            }
-        }),
-        //压缩JS代码
-        new webpack.optimize.UglifyJsPlugin({
-            compress: {
-                warnings: false
-            },
-            //sourceMap: true,
-            output: {
-                comments: false, // 去掉注释内容
-            }
-        }),
-
-        // new ExtractTextPlugin('css/[name].css?v=[contenthash:8]'),
-        // new webpack.LoaderOptionsPlugin({
-        //     options: {
-        //         postcss: require(postcssConfigDir)
-        //     },
-        // }),
-        // //压缩css代码
-        // new OptimizeCssAssetsPlugin({
-        //     assetNameRegExp: /\.css\.*(?!.*map)/g, //注意不要写成 /\.css$/g
-        //     cssProcessor: require('cssnano'),
-        //     cssProcessorOptions: { discardComments: { removeAll: true } },
-        //     canPrint: true
-        // }),
-
         //keep module.id stable when vender modules does not change
+        new CleanWebpackPlugin(['./src/mobile/js/lib']),
         new HashedChunkIdsPlugin(),
         new webpack.HashedModuleIdsPlugin(),
         new webpack.DllPlugin({
@@ -106,5 +59,29 @@ module.exports = {
             // 指定一个路径作为上下文环境，需要与DllReferencePlugin的context参数保持一致，建议统一设置为项目根目录
             context: __dirname,
         })
+
     ]
 };
+
+
+/***** 区分开发环境和生产环境 *****/
+
+if (prod) {
+    console.log('当前编译环境：production');
+    module.exports.plugins = module.exports.plugins.concat([
+        //压缩JS代码
+        new webpack.optimize.UglifyJsPlugin({
+            compress: {
+                warnings: false
+            },
+            output: {
+                comments: false, // 去掉注释内容
+            }
+        })
+    ]);
+} else {
+    console.log('当前编译环境：dev');
+
+    module.exports.devtool = 'cheap-module-source-map';
+
+}
