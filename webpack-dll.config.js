@@ -1,19 +1,19 @@
-var path = require('path');
-var webpack = require('webpack');
+const path = require('path');
+const webpack = require('webpack');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
-var HashedChunkIdsPlugin = require('./config/hashedChunkIdsPlugin.js');
+const HashedChunkIdsPlugin = require('./config/hashedChunkIdsPlugin.js');
 
 //是否是生产环境
-var prod = process.env.NODE_ENV === 'production' ? true : false;
+const prod = process.env.NODE_ENV === 'production' ? true : false;
 
 //webpack配置
-var resolveConfigDir = './config/resolve.config.js';
+const resolveConfigDir = './config/resolve.config.js';
 
-var baseEntryDir = './src/mobile/';
-var outputDir = path.resolve(__dirname, './dist/mobile/');
-var outputPublicDir = 'http://static.joylive.tv/dist/mobile/';
-var entries = ['vue', 'axios', 'flexible', 'webpack-zepto'];
-var dll_manifest_name = 'dll_manifest';
+const baseEntryDir = './src/mobile/';
+const outputDir = path.resolve(__dirname, './dist/mobile/');
+const outputPublicDir = 'http://static.joylive.tv/dist/mobile/';
+const entries = ['vue', 'axios', 'flexible', 'webpack-zepto'];
+const dll_manifest_name = 'dll_manifest';
 
 
 module.exports = {
