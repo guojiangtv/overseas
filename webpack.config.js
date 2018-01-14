@@ -35,6 +35,12 @@ var entryDir = baseEntryDir + '**/*.js';
 var outputDir = path.resolve(__dirname, './dist/mobile/');
 var outputPublicDir = 'http://static.joylive.tv/dist/mobile/';
 
+// var express = require('express');
+// var app = express();
+// app.use("/",express.static(__dirname + "./dist/mobile/"));
+// app.listen(8080);
+
+
 var basePageEntry = './html/src/mobile/';
 var basePageOutput = './html/dist/mobile/';
 
@@ -59,6 +65,23 @@ module.exports = {
         path: outputDir,
         publicPath: outputPublicDir,
         filename: 'js/[name].js?v=[chunkhash:8]'
+    },
+    devServer: {
+        //设置服务器主文件夹，默认情况下，从项目的根目录提供文件
+        contentBase: path.resolve(__dirname, "html/dist/mobile/"),
+        open: true,
+        //开启gzip压缩
+        compress: true,
+        //使用inlilne模式
+        inline: true,
+        // //当编译错误的时候，网页上显示错误信息
+        overlay: {
+            warnings: true,
+            errors: true
+        },
+        //设置域名，默认是localhost
+        // host: "10.74.138.249",
+        // port: 3000
     },
     module: {
         rules: [{
