@@ -34,20 +34,12 @@ var baseEntryDir = './src/mobile/js/';
 var entryDir = baseEntryDir + '**/*.js';
 var outputDir = path.resolve(__dirname, './dist/mobile/');
 var outputPublicDir = 'http://static.joylive.tv/dist/mobile/';
-
-// var express = require('express');
-// var app = express();
-// app.use("/",express.static(__dirname + "./dist/mobile/"));
-// app.listen(8080);
-
-
 var basePageEntry = './html/src/mobile/';
 var basePageOutput = './html/dist/mobile/';
 
-
 //clean folder
-var cleanMaps = [
-    path.resolve(__dirname, './dist/mobile/**/*.map')
+var cleanDir = [
+    path.resolve(__dirname, 'dist')
 ];
 var dll_manifest_name = 'dll_manifest';
 
@@ -80,8 +72,8 @@ module.exports = {
             errors: true
         },
         //设置域名，默认是localhost
-        // host: "10.74.138.249",
-        // port: 3000
+        host: "m.joylive.tv",
+        port: 80
     },
     module: {
         rules: [{
@@ -139,9 +131,9 @@ module.exports = {
     },
     plugins: [
         //将dll.js文件移到dist文件夹内
-        // new CopyWebpackPlugin([
-        //     { from: baseEntryDir + '/lib', to: outputDir + '/js/lib' },
-        // ]),
+        new CopyWebpackPlugin([
+            { from: baseEntryDir + '/lib', to: outputDir + '/js/lib' },
+        ]),
 
         new HashedChunkIdsPlugin(),
         new webpack.HashedModuleIdsPlugin(),
@@ -169,8 +161,7 @@ module.exports = {
             //filename: 'js/vendors-[hash:6].js', // 公共模块的名称
             chunks: 'vendors', // chunks是需要提取的模块
             minChunks: Infinity //公共模块最小被引用的次数
-        }),
-
+        })
     ]
 };
 
