@@ -3,3 +3,5 @@
 2018/01/12 17:27:26 [error] 7000#10744: *14 CreateFile() "F:/overseas/local/favicon.ico" failed (2: The system cannot find the file specified), client: 127.0.0.1, server: static.joylive.tv, request: "GET /favicon.ico HTTP/1.1", host: "www.kuaishouvideo.com", referrer: "http://www.kuaishouvideo.com/activity/queen/datuanzi.html"
 2018/01/12 18:02:24 [notice] 6384#5560: signal process started
 2018/01/15 20:19:29 [notice] 8820#8552: signal process started
+2018/01/15 21:21:31 [error] 5516#7248: *4 CreateFile() "F:/overseas/dist/mobile/img/common/title_icon.png" failed (3: The system cannot find the path specified), client: 127.0.0.1, server: static.joylive.tv, request: "GET /dist/mobile/img/common/title_icon.png?v=fc7136bd6e HTTP/1.1", host: "static.joylive.tv", referrer: "http://m.joylive.tv/activity/test.html"
+2018/01/15 21:47:11 [notice] 9004#7568: signal process started
