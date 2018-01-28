@@ -1,22 +1,16 @@
 const path = require("path");
 const webpack = require('webpack');
-//html模板插件 详见https://www.npmjs.com/package/html-webpack-plugin
+const glob = require('glob');
 const htmlWebpackPlugin = require('html-webpack-plugin');
-//代码分离插件 详见https://www.npmjs.com/package/extract-text-webpack-plugin
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
-//https://www.npmjs.com/package/clean-webpack-plugin
 const CleanWebpackPlugin = require('clean-webpack-plugin');
-//https://www.npmjs.com/package/optimize-css-assets-webpack-plugin
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
-//https://www.npmjs.com/package/copy-webpack-plugin
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 
-const HashedChunkIdsPlugin = require('./config/hashedChunkIdsPlugin.js');
+//const HashedChunkIdsPlugin = require('./config/hashedChunkIdsPlugin.js');
 
 
 
-//路径模式匹配模块glob
-var glob = require('glob');
 //是否是生产环境
 var prod = process.env.NODE_ENV === 'production' ? true : false;
 
@@ -36,12 +30,9 @@ var outputDir = path.resolve(__dirname, './dist/mobile/');
 var outputPublicDir = 'http://static.joylive.tv/dist/mobile/';
 var basePageEntry = './html/src/mobile/';
 var basePageOutput = './html/dist/mobile/';
-
-//clean folder
-var cleanDir = [
-    path.resolve(__dirname, 'dist')
-];
 var dll_manifest_name = 'dll_manifest';
+
+
 
 //入口js文件配置以及公共模块配置
 var entries = getEntry(entryDir);
@@ -135,7 +126,7 @@ module.exports = {
             { from: baseEntryDir + '/lib', to: outputDir + '/js/lib' },
         ]),
 
-        new HashedChunkIdsPlugin(),
+        //new HashedChunkIdsPlugin(),
         new webpack.HashedModuleIdsPlugin(),
         new webpack.DllReferencePlugin({
             // 指定一个路径作为上下文环境，需要与DllPlugin的context参数保持一致，建议统一设置为项目根目录
@@ -228,7 +219,7 @@ function getEntry(globPath) {
 if (prod) {
     console.log('当前编译环境：production');
     module.exports.plugins = module.exports.plugins.concat([
-        new CleanWebpackPlugin(cleanDir),
+        new CleanWebpackPlugin(outputDir),
         //压缩css代码
         new OptimizeCssAssetsPlugin({
             assetNameRegExp: /\.css\.*(?!.*map)/g, //注意不要写成 /\.css$/g
@@ -245,13 +236,12 @@ if (prod) {
             compress: {
                 warnings: false
             },
-            //sourceMap: true,
             output: {
-                comments: false, // 去掉注释内容
+                comments: false,
             }
         })
     ]);
 } else {
     console.log('当前编译环境：dev');
-    module.exports.devtool = '#cheap-module-eval-source-map';
+    module.exports.devtool = 'inline-source-map';
 }
