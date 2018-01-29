@@ -1,31 +1,37 @@
-const path = require('path');
+const path = require("path");
 const webpack = require('webpack');
 const glob = require('glob');
 const htmlWebpackPlugin = require('html-webpack-plugin');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const ExtractTextPlugin = require("extract-text-webpack-plugin");
 const CleanWebpackPlugin = require('clean-webpack-plugin');
+const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HtmlWebpackIncludeAssetsPlugin = require('html-webpack-include-assets-plugin');
 
 //const HashedChunkIdsPlugin = require('./config/hashedChunkIdsPlugin.js');
 
-
-console.log('当前编译环境：dev');
+console.log('当前编译环境：production');
 //webpack配置
 var eslintConfigDir = '../.eslintrc.js';
 var postcssConfigDir = '../.postcssrc.js';
 var resolveConfigDir = './resolve.config.js';
 
-
 //忽略不必要编译的文件
-//var entryIgnore = require('../entryignore.json');
+// var entryIgnore = require('./entryignore.json');
 
 
 //目录配置
-var entryDir = path.resolve(__dirname, '../src/mobile/');
+var entryDir = path.resolve(__dirname,'../src/mobile/');
 var outputDir = path.resolve(__dirname, '../dist/mobile/');
-//var dll_manifest_name = 'dll_manifest';
+var dll_manifest_name = 'dll_manifest';
 
+//建立express服务器
+const express = require('express');
+const app = express();
+//指定静态文件的位置
+app.use('/', express.static(path.resolve(__dirname, '../dist/mobile')));
+//监听端口号
+app.listen(80,'m.joylive.tv');
 
 
 //入口js文件配置以及公共模块配置
@@ -37,35 +43,11 @@ console.log(entries);
 module.exports = {
     /* 输入文件 */
     resolve: require(resolveConfigDir),
-    devtool: 'inline-source-map',
     entry: entries,
     output: {
         path: outputDir,
+        publicPath: 'http://static.joylive.tv/dist/mobile/',
         filename: 'js/[name].js?v=[chunkhash:8]'
-    },
-    devServer: {
-        //设置服务器主文件夹，默认情况下，从项目的根目录提供文件
-        contentBase: outputDir,
-        //自动开启默认浏览器
-        //open: true,
-        //开启热模块替换,只重载页面中变化了的部分
-        //hot: true,
-        //开启gzip压缩
-        compress: true,
-        //使用inlilne模式,会触发页面的动态重载
-        inline: true,
-        //当编译错误的时候，网页上显示错误信息
-        overlay: {
-            warnings: true,
-            errors: true
-        },
-        //浏览器自动打开的文件夹
-        //openPage: 'html/',
-        //只在shell中展示错误信息
-        //stats: 'errors-only',
-        //设置域名，默认是localhost
-        host: 'm.joylive.tv',
-        port: 80
     },
     module: {
         rules: [{
@@ -81,18 +63,18 @@ module.exports = {
             test: /\.js$/,
             enforce: 'pre',
             loader: 'eslint-loader',
-            include: [entryDir + '\\js\\activity\\'],
+            include:[entryDir + '\\js\\activity\\'],
             options: {
                 fix: true
             }
         }, {
             test: /\.js$/,
             loader: 'babel-loader',
-            include: [entryDir + '\\js\\'],
+            include:[entryDir + '\\js\\'],
             options: {
                 presets: ['env']
             }
-        }, {
+        },{
             test: /\.css$/,
             use: ['style-loader', 'css-loader', 'postcss-loader'],
             //exclude: [baseEntryDir + 'css/lib']
@@ -124,23 +106,26 @@ module.exports = {
         new CleanWebpackPlugin(outputDir, {
             allowExternal: true
         }),
-        new ExtractTextPlugin('css/[name].css?v=[contenthash:8]'),
+
+        //new HashedChunkIdsPlugin(),
+        new webpack.HashedModuleIdsPlugin(),
+        new webpack.DllReferencePlugin({
+            // 指定一个路径作为上下文环境，需要与DllPlugin的context参数保持一致，建议统一设置为项目根目录
+            context: __dirname,
+            // 指定manifest.json
+            manifest: require('../' + dll_manifest_name + '.json'),
+            // 当前Dll的所有内容都会存放在这个参数指定变量名的一个全局变量下，注意与DllPlugin的name参数保持一致
+            name: 'dll_library',
+        }),
+
         new webpack.LoaderOptionsPlugin({
             options: {
                 eslint: require(eslintConfigDir),
                 postcss: require(postcssConfigDir)
             },
         }),
-        //new HashedChunkIdsPlugin(),
-        new webpack.HashedModuleIdsPlugin(),
-        // new webpack.DllReferencePlugin({
-        //     // 指定一个路径作为上下文环境，需要与DllPlugin的context参数保持一致，建议统一设置为项目根目录
-        //     context: __dirname,
-        //     // 指定manifest.json
-        //     manifest: require('./' + dll_manifest_name + '.json'),
-        //     // 当前Dll的所有内容都会存放在这个参数指定变量名的一个全局变量下，注意与DllPlugin的name参数保持一致
-        //     name: 'dll_library',
-        // }),
+
+        new ExtractTextPlugin('css/[name].css?v=[contenthash:8]'),
 
         // 提取公共模块
         new webpack.optimize.CommonsChunkPlugin({
@@ -149,13 +134,32 @@ module.exports = {
             chunks: 'vendors', // chunks是需要提取的模块
             minChunks: Infinity //公共模块最小被引用的次数
         }),
+        //压缩css代码
+        new OptimizeCssAssetsPlugin({
+            assetNameRegExp: /\.css\.*(?!.*map)/g, //注意不要写成 /\.css$/g
+            cssProcessor: require('cssnano'),
+            cssProcessorOptions: {
+                discardComments: { removeAll: true },
+                // 避免 cssnano 重新计算 z-index
+                safe: true
+            },
+            canPrint: true
+        }),
+        //压缩JS代码
+        new webpack.optimize.UglifyJsPlugin({
+            compress: {
+                warnings: false
+            },
+            output: {
+                comments: false,
+            }
+        }),
         //将dll.js文件移到dist文件夹内
         new CopyWebpackPlugin([
             { from: entryDir + '/js/lib', to: outputDir + '/js/lib' },
-        ])
+        ]),
     ]
 };
-
 
 /***** 生成组合后的html *****/
 var pages = getEntry(entryDir + '/html/**/*.ejs');
@@ -203,7 +207,7 @@ function getEntry(globPath) {
                 entry.split('/html/')[1].split('.ejs')[0];
 
             //if (entryIgnore.indexOf(entryItem) == -1) {
-            entries[entryItem] = entry;
+                entries[entryItem] = entry;
             //}
 
         }
