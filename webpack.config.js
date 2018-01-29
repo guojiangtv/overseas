@@ -1,14 +1,9 @@
 const path = require("path");
 const webpack = require('webpack');
-//html模板插件 详见https://www.npmjs.com/package/html-webpack-plugin
 const htmlWebpackPlugin = require('html-webpack-plugin');
-//代码分离插件 详见https://www.npmjs.com/package/extract-text-webpack-plugin
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
-//https://www.npmjs.com/package/clean-webpack-plugin
 const CleanWebpackPlugin = require('clean-webpack-plugin');
-//https://www.npmjs.com/package/optimize-css-assets-webpack-plugin
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
-//https://www.npmjs.com/package/copy-webpack-plugin
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 const HashedChunkIdsPlugin = require('./config/hashedChunkIdsPlugin.js');
@@ -57,23 +52,6 @@ module.exports = {
         path: outputDir,
         publicPath: outputPublicDir,
         filename: 'js/[name].js?v=[chunkhash:8]'
-    },
-    devServer: {
-        //设置服务器主文件夹，默认情况下，从项目的根目录提供文件
-        contentBase: path.resolve(__dirname, "html/dist/mobile/"),
-        open: true,
-        //开启gzip压缩
-        compress: true,
-        //使用inlilne模式
-        inline: true,
-        // //当编译错误的时候，网页上显示错误信息
-        overlay: {
-            warnings: true,
-            errors: true
-        },
-        //设置域名，默认是localhost
-        host: "m.joylive.tv",
-        port: 80
     },
     module: {
         rules: [{
