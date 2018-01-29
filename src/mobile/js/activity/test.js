@@ -1,4 +1,4 @@
-require('../../css/activity/test.less');
+import '../../css/activity/test.less';
 
 import Vue from 'vue';
 import axios from 'axios';

@@ -92,7 +92,8 @@ module.exports = {
             options: {
                 presets: ['env']
             }
-        }, {
+        },
+        {
             test: /\.css$/,
             use: ['style-loader', 'css-loader', 'postcss-loader'],
             //exclude: [baseEntryDir + 'css/lib']
@@ -104,11 +105,11 @@ module.exports = {
             loader: 'url-loader',
             options: {
                 limit: 5120,
-                // name: function(p) {
-                //     let tem_path = p.split('img')[1];
-                //     tem_path = tem_path.replace(/\\/g, '/');
-                //     return 'img/' + tem_path + '?v=[hash:8]';
-                // }
+                name: function(p) {
+                    let tem_path = p.split('img')[1];
+                    tem_path = tem_path.replace(/\\/g, '/');
+                    return 'img/' + tem_path + '?v=[hash:8]';
+                }
             }
         }, {
             test: /\.html$/,

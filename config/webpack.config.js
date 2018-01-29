@@ -15,18 +15,18 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 var prod = process.env.NODE_ENV === 'production' ? true : false;
 
 //webpack配置
-var eslintConfigDir = prod ? './config/.eslintrc.js' : './config/.eslintrc.dev.js';
-var postcssConfigDir = './config/postcss.config.js';
-var resolveConfigDir = './config/resolve.config.js';
+var eslintConfigDir = prod ? '../.eslintrc.js';
+var postcssConfigDir = '../.postcss.config.js';
+var resolveConfigDir = './resolve.config.js';
 
 //忽略不必要编译的文件
 // var entryIgnore = require('./entryignore.json');
 
 
 //目录配置
-var baseEntryDir = './src/mobile/js/';
+var baseEntryDir = '../src/mobile/js/';
 var entryDir = baseEntryDir + '**/*.js';
-var outputDir = path.resolve(__dirname, './dist/mobile/');
+var outputDir = path.resolve(__dirname, '../dist/mobile/');
 var outputPublicDir = 'http://static.joylive.tv/dist/mobile/';
 var basePageEntry = './html/src/mobile/';
 var basePageOutput = './html/dist/mobile/';
