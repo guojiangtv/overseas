@@ -7,6 +7,7 @@
     "dll": "webpack --progress --colors --config config/webpack-dll.config.js",
     "dev": "webpack-dev-server --progress --config config/webpack.dev.js",
     "build": "webpack --progress --colors --hide-modules --config config/webpack.prod.js",
+    "server":"node config/server.js",
     "watch": "webpack --progress --watch --config config/webpack.dev.js"
   },
   "author": "Jesse",

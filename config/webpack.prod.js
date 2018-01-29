@@ -1,8 +1,8 @@
-const path = require("path");
+const path = require('path');
 const webpack = require('webpack');
 const glob = require('glob');
 const htmlWebpackPlugin = require('html-webpack-plugin');
-const ExtractTextPlugin = require("extract-text-webpack-plugin");
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
@@ -24,14 +24,6 @@ var resolveConfigDir = './resolve.config.js';
 var entryDir = path.resolve(__dirname,'../src/mobile/');
 var outputDir = path.resolve(__dirname, '../dist/mobile/');
 var dll_manifest_name = 'dll_manifest';
-
-//建立express服务器
-const express = require('express');
-const app = express();
-//指定静态文件的位置
-app.use('/', express.static(path.resolve(__dirname, '../dist/mobile')));
-//监听端口号
-app.listen(80,'m.joylive.tv');
 
 
 //入口js文件配置以及公共模块配置
