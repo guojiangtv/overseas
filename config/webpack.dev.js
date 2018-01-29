@@ -49,7 +49,6 @@ module.exports = {
         //open: true,
         //开启热模块替换,只重载页面中变化了的部分
         //hot: true,
-        //hotOnly:true,
         //开启gzip压缩
         compress: true,
         //使用inlilne模式,会触发页面的动态重载
@@ -92,8 +91,7 @@ module.exports = {
             options: {
                 presets: ['env']
             }
-        },
-        {
+        },{
             test: /\.css$/,
             use: ['style-loader', 'css-loader', 'postcss-loader'],
             //exclude: [baseEntryDir + 'css/lib']
@@ -106,7 +104,7 @@ module.exports = {
             options: {
                 limit: 5120,
                 name: function(p) {
-                    let tem_path = p.split('img')[1];
+                    let tem_path = p.split(/\\img\\/)[1];
                     tem_path = tem_path.replace(/\\/g, '/');
                     return 'img/' + tem_path + '?v=[hash:8]';
                 }

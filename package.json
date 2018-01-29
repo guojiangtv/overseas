@@ -6,7 +6,7 @@
   "scripts": {
     "dll": "webpack --progress --colors --config config/webpack-dll.config.js",
     "dev": "webpack-dev-server --progress --config config/webpack.dev.js",
-    "watch": "webpack --progress --watch --config config/webpack.config.js"
+    "watch": "webpack --progress --watch --config config/webpack.dev.js"
   },
   "author": "Jesse",
   "license": "ISC",
