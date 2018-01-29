@@ -1,4 +1,4 @@
-const path = require("path");
+const path = require('path');
 const webpack = require('webpack');
 const glob = require('glob');
 const htmlWebpackPlugin = require('html-webpack-plugin');
@@ -22,7 +22,7 @@ var resolveConfigDir = './resolve.config.js';
 //目录配置
 var entryDir = path.resolve(__dirname,'../src/mobile/');
 var outputDir = path.resolve(__dirname, '../dist/mobile/');
-var dll_manifest_name = 'dll_manifest';
+//var dll_manifest_name = 'dll_manifest';
 
 
 
@@ -64,8 +64,8 @@ module.exports = {
         //只在shell中展示错误信息
         //stats: 'errors-only',
         //设置域名，默认是localhost
-        host: "m.joylive.tv",
-        port: 8080
+        host: 'm.joylive.tv',
+        port: 80
     },
     module: {
         rules: [{
@@ -91,7 +91,7 @@ module.exports = {
             include:[entryDir + '/js/'],
             options: {
                 presets: ['env']
-            },
+            }
         }, {
             test: /\.css$/,
             use: ['style-loader', 'css-loader', 'postcss-loader'],
