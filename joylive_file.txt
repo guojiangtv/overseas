@@ -1,0 +1,11 @@
+videochat/web/html/pc/dist/activity/queen/datuanzi.html
+static_guojiang_tv/pc/v4/css/activity/queen/datuanzi.css
+static_guojiang_tv/pc/v4/img/activity/queen/datuanzi
+static_guojiang_tv/pc/v4/js/activity/queen/datuanzi.js
+static_guojiang_tv/src/pc/v4/css/activity/queen/datuanzi.less
+static_guojiang_tv/src/pc/v4/img/activity/queen/datuanzi
+static_guojiang_tv/src/pc/v4/js/activity/queen/datuanzi.js
+static_guojiang_tv/src/pc/v4/js/component/jquery.slimscroll.js
+static_guojiang_tv/pc/v4/js/lib/dll.js
+static_guojiang_tv/pc/v4/js/manifest.js
+static_guojiang_tv/pc/v4/js/vendors.js

@@ -5,9 +5,7 @@ const ExtractTextPlugin = require("extract-text-webpack-plugin");
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
-
 const HashedChunkIdsPlugin = require('./config/hashedChunkIdsPlugin.js');
-
 
 
 //路径模式匹配模块glob
@@ -112,8 +110,9 @@ module.exports = {
         new CopyWebpackPlugin([
             { from: baseEntryDir + '/lib', to: outputDir + '/js/lib' },
         ]),
-
+        //稳定chunkID
         new HashedChunkIdsPlugin(),
+        //稳定moduleID
         new webpack.HashedModuleIdsPlugin(),
         new webpack.DllReferencePlugin({
             // 指定一个路径作为上下文环境，需要与DllPlugin的context参数保持一致，建议统一设置为项目根目录
@@ -231,5 +230,5 @@ if (prod) {
     ]);
 } else {
     console.log('当前编译环境：dev');
-    module.exports.devtool = '#cheap-module-eval-source-map';
+    module.exports.devtool = 'inline-source-map';
 }
