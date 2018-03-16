@@ -1,0 +1,78 @@
+<head><link href="http://static.joylive.tv/dist/mobile/css/vendors.css?v=4577543a" rel="stylesheet"></head>Html Webpack Plugin:
+<pre>
+  Error: Child compilation failed:
+  Module build failed: Error: ENOENT: no such file or directory, open 'F:\overseas\html\src\mobile\activity\test.js'
+  
+  
+  - Error: ENOENT: no such file or directory, open 'F:\overseas\html\src\mobile\activity\test.js'
+  
+  - compiler.js:76 
+    [overseas]/[html-webpack-plugin]/lib/compiler.js:76:16
+  
+  - Compiler.js:300 compile
+    [overseas]/[webpack]/lib/Compiler.js:300:11
+  
+  - Compiler.js:510 applyPluginsAsync.err
+    [overseas]/[webpack]/lib/Compiler.js:510:14
+  
+  - Tapable.js:202 next
+    [overseas]/[tapable]/lib/Tapable.js:202:11
+  
+  - CachePlugin.js:78 Compiler.<anonymous>
+    [overseas]/[webpack]/lib/CachePlugin.js:78:5
+  
+  - Tapable.js:206 Compiler.applyPluginsAsyncSeries
+    [overseas]/[tapable]/lib/Tapable.js:206:13
+  
+  - Compiler.js:507 compilation.seal.err
+    [overseas]/[webpack]/lib/Compiler.js:507:11
+  
+  - Tapable.js:195 Compilation.applyPluginsAsyncSeries
+    [overseas]/[tapable]/lib/Tapable.js:195:46
+  
+  - Compilation.js:680 self.applyPluginsAsync.err
+    [overseas]/[webpack]/lib/Compilation.js:680:19
+  
+  - Tapable.js:195 Compilation.applyPluginsAsyncSeries
+    [overseas]/[tapable]/lib/Tapable.js:195:46
+  
+  - Compilation.js:671 self.applyPluginsAsync.err
+    [overseas]/[webpack]/lib/Compilation.js:671:11
+  
+  - Tapable.js:195 Compilation.applyPluginsAsyncSeries
+    [overseas]/[tapable]/lib/Tapable.js:195:46
+  
+  - Compilation.js:666 self.applyPluginsAsync.err
+    [overseas]/[webpack]/lib/Compilation.js:666:10
+  
+  - Tapable.js:195 Compilation.applyPluginsAsyncSeries
+    [overseas]/[tapable]/lib/Tapable.js:195:46
+  
+  - Compilation.js:662 sealPart2
+    [overseas]/[webpack]/lib/Compilation.js:662:9
+  
+  - Tapable.js:195 Compilation.applyPluginsAsyncSeries
+    [overseas]/[tapable]/lib/Tapable.js:195:46
+  
+  - Compilation.js:605 Compilation.seal
+    [overseas]/[webpack]/lib/Compilation.js:605:8
+  
+  - Compiler.js:504 applyPluginsParallel.err
+    [overseas]/[webpack]/lib/Compiler.js:504:17
+  
+  - Tapable.js:289 
+    [overseas]/[tapable]/lib/Tapable.js:289:11
+  
+  - Compilation.js:507 _addModuleChain
+    [overseas]/[webpack]/lib/Compilation.js:507:11
+  
+  - Compilation.js:477 processModuleDependencies.err
+    [overseas]/[webpack]/lib/Compilation.js:477:14
+  
+  - next_tick.js:73 _combinedTickCallback
+    internal/process/next_tick.js:73:7
+  
+  - next_tick.js:104 process._tickCallback
+    internal/process/next_tick.js:104:9
+  
+</anonymous></pre><script type="text/javascript" src="http://static.joylive.tv/dist/mobile/js/vendors.js?v=50bbd02d"></script>

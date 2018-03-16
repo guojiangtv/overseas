@@ -7,12 +7,14 @@ const HashedChunkIdsPlugin = require('./config/hashedChunkIdsPlugin.js');
 const prod = process.env.NODE_ENV === 'production' ? true : false;
 
 //webpack配置
+const eslintConfigDir = './.eslintrc.js';
+const postcssConfigDir = './config/postcss.config.js';
 const resolveConfigDir = './config/resolve.config.js';
 
-const baseEntryDir = './src/mobile/';
-const outputDir = path.resolve(__dirname, './src/mobile/');
+const baseEntryDir = './src/v2/mobile/';
+const outputDir = path.resolve(__dirname, './src/v2/mobile/');
 const outputPublicDir = 'http://static.joylive.tv/dist/mobile/';
-const entries = ['vue', 'axios', 'flexible', 'webpack-zepto'];
+const entries = ['vue', 'axios', 'layer', 'webpack-zepto'];
 const dll_manifest_name = 'dll_manifest';
 
 
@@ -30,24 +32,29 @@ module.exports = {
         /*libraryTarget: 'umd'*/
     },
     module: {
-        rules: [{
-                test: /\.js$/,
-                enforce: 'pre',
-                loader: 'eslint-loader',
-                // include: path.resolve(__dirname, entryDir),
-                // exclude: [baseEntryDir + 'js/lib', baseEntryDir + 'js/component'],
-                options: {
-                    fix: true
-                }
-            },{
-                test: /\.js$/,
-                loader: 'babel-loader',
-                // exclude: ['node_modules', baseEntryDir + 'js/lib', baseEntryDir + 'js/component']
-            }
-        ]
+        rules: [
+        // {
+        //     test: /\.js$/,
+        //     enforce: 'pre',
+        //     loader: 'eslint-loader',
+        //     // include: path.resolve(__dirname, entryDir),
+        //     exclude: [baseEntryDir + 'js/lib', baseEntryDir + 'js/component'],
+        //     options: {
+        //         fix: true
+        //     }
+        // }, {
+        //     test: /\.js$/,
+        //     loader: 'babel-loader',
+        //     exclude: ['node_modules', baseEntryDir + 'js/lib', baseEntryDir + 'js/component']
+        // },
+        {
+            test: /\.css$/,
+            use: ['style-loader', 'css-loader', 'postcss-loader'],
+            exclude: [baseEntryDir + 'css/lib']
+        }]
     },
     plugins: [
-        new CleanWebpackPlugin(['./src/mobile/js/lib']),
+        new CleanWebpackPlugin(['./src/v2/mobile/js/lib/dll.js']),
         //keep module.id stable when vender modules does not change
         new HashedChunkIdsPlugin(),
         new webpack.HashedModuleIdsPlugin(),
@@ -58,6 +65,12 @@ module.exports = {
             name: '[name]_library',
             // 指定一个路径作为上下文环境，需要与DllReferencePlugin的context参数保持一致，建议统一设置为项目根目录
             context: __dirname,
+        }),
+        new webpack.LoaderOptionsPlugin({
+            options: {
+                eslint: require(eslintConfigDir),
+                postcss: require(postcssConfigDir)
+            },
         })
 
     ]

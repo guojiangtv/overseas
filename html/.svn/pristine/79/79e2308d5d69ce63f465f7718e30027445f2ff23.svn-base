@@ -1,0 +1,69 @@
+<main id="app" v-cloak>
+    <div class="leader-board"></div>
+    <Rank></Rank>
+    <div class="user-info">
+        <div class="avatar-box fl">
+            <img :src="user.uInfo.head_pic_1" class="avatar">
+        </div>
+        <div class="num fl">
+            <p class="received">Received:<span class="diamond"></span>x {{user.receivedNum}}</p>
+            <div class="sent-won">
+                <p class="sent fl">Sent:<span class="diamond"></span>x {{user.sentNum}}</p>
+                <p class="won fl">Won:<span class="glod"></span>x {{user.winNum}}</p>
+            </div>
+        </div>
+    </div>
+    <div class="rules-btn" @click="showRules = true;">
+        <span class="icon"></span>
+    </div>
+    <div class="scroll-up-btn" @click="toTop" v-show="showToUpBtn"></div>
+    <div class="rules-box" v-show="showRules">
+        <div class="rules">
+            <div class="title1"></div>
+            <div class="rules-content">
+                <p class="time">Time：00:00:00 March 15  -23:59:59 March 24 , PST</p>
+                <div class="title2"></div>
+                <ul class="lucky-box">
+                    <li>※ Send gifts worth 600 diamonds (coins) to have a chance open lucky treasure box to win free coins .</li>
+                    <li>※ Coins will be added to your account automatically if you win.</li>
+                </ul>
+                <div class="title3"></div>
+                <p class="content">※ Compete for “Top 10 Diamond Receiver” and win more dollars for your balance!</p>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Rankling</th>
+                            <th>Rewards</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>NO.1</td>
+                            <td>$50</td>
+                        </tr>
+                        <tr>
+                            <td>NO.2</td>
+                            <td>$30</td>
+                        </tr>
+                        <tr>
+                            <td>NO.3</td>
+                            <td>$20</td>
+                        </tr>
+                        <tr>
+                            <td>NO.4-10</td>
+                            <td>$5</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p class="content">※ Scoring Rules: More gifts received, better ranking!</p>
+                <p class="note-title">Notes</p>
+                <ul class="notes">
+                    <li>1.  No misuse of air-time, misleading contents, hacking of diamonds or any illegal/unqualified acts.</li>
+                    <li>2. For more information please contact: livestreaming.tech@gmail.com.</li>
+                </ul>
+            </div>
+        </div>
+        <div class="close-btn" @click="showRules=false;">OK</div>
+    </div>
+</main>
+

@@ -1,8 +1,8 @@
-const path = require("path");
+const path = require('path');
 const webpack = require('webpack');
 const htmlWebpackPlugin = require('html-webpack-plugin');
-const ExtractTextPlugin = require("extract-text-webpack-plugin");
-const CleanWebpackPlugin = require('clean-webpack-plugin');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
+// const CleanWebpackPlugin = require('clean-webpack-plugin');
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HashedChunkIdsPlugin = require('./config/hashedChunkIdsPlugin.js');
@@ -14,7 +14,7 @@ var glob = require('glob');
 var prod = process.env.NODE_ENV === 'production' ? true : false;
 
 //webpack配置
-var eslintConfigDir = prod ? './config/.eslintrc.js' : './config/.eslintrc.dev.js';
+var eslintConfigDir = './.eslintrc.js' ;
 var postcssConfigDir = './config/postcss.config.js';
 var resolveConfigDir = './config/resolve.config.js';
 
@@ -23,10 +23,10 @@ var resolveConfigDir = './config/resolve.config.js';
 
 
 //目录配置
-var baseEntryDir = './src/mobile/js/';
+var baseEntryDir = './src/v2/mobile/js/';
 var entryDir = baseEntryDir + '**/*.js';
-var outputDir = path.resolve(__dirname, './dist/mobile/');
-var outputPublicDir = 'http://static.joylive.tv/dist/mobile/';
+var outputDir = path.resolve(__dirname, './dist/v2/mobile/');
+var outputPublicDir = 'http://static.joylive.tv/dist/v2/mobile/';
 var basePageEntry = './html/src/mobile/';
 var basePageOutput = './html/dist/mobile/';
 
@@ -73,9 +73,6 @@ module.exports = {
         }, {
             test: /\.js$/,
             loader: 'babel-loader',
-            options: {
-                presets: ['env']
-            },
             exclude: ['node_modules', baseEntryDir + 'js/lib', baseEntryDir + 'js/component']
         }, {
             test: /\.css$/,
@@ -205,7 +202,7 @@ function getEntry(globPath) {
 if (prod) {
     console.log('当前编译环境：production');
     module.exports.plugins = module.exports.plugins.concat([
-        new CleanWebpackPlugin(cleanDir),
+        // new CleanWebpackPlugin(cleanDir),
         //压缩css代码
         new OptimizeCssAssetsPlugin({
             assetNameRegExp: /\.css\.*(?!.*map)/g, //注意不要写成 /\.css$/g

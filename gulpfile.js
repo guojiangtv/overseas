@@ -40,16 +40,16 @@ gulp.task('copybeta', function() {
 			}
 			console.log('dir:', srcFile)
 
-			if(srcFile.indexOf('static_guojiang_tv') != -1){
-				gulp.src(srcFile, {base: './static_guojiang_tv'})
+			if(srcFile.indexOf('static_cblive') != -1){
+				gulp.src(srcFile, {base: './static_cblive'})
                     .pipe(debug({title: 'static:'}))
                     .pipe(gulp.dest( fs.realpathSync('./beta/static') ))
 			}else{
-				srcFile = srcFile.replace('videochat/web/','')
+				srcFile = srcFile.replace('cblive/web/','')
 
 				gulp.src(srcFile, {base: './html'})
-                    .pipe(debug({title: 'videochat:'}))
-                    .pipe(gulp.dest( fs.realpathSync('./beta/videochat/web/html') ))
+                    .pipe(debug({title: 'cblive:'}))
+                    .pipe(gulp.dest( fs.realpathSync('./beta/cblive/web/html') ))
 			}
 
 		}
@@ -81,15 +81,16 @@ gulp.task('copytrunk', function() {
 
 			if(srcFile.indexOf('maps') != -1) continue
 
-			if(srcFile.indexOf('static_guojiang_tv') != -1){
-				gulp.src(srcFile, {base: './static_guojiang_tv'})
-                    .pipe(debug({title: 'static:'}))
-                    .pipe(gulp.dest( fs.realpathSync('./trunk/static') ))
+			if(srcFile.indexOf('static_cblive') != -1){
+                srcFile = srcFile.replace('static_cblive/','')
+				gulp.src(srcFile, {base: './dist'})
+                    .pipe(debug({title: 'static_cblive:'}))
+                    .pipe(gulp.dest( fs.realpathSync('./trunk/static_cblive/dist') ))
 			}else{
-				srcFile = srcFile.replace('videochat/web/','')
+				srcFile = srcFile.replace('cblive/web/','')
 				gulp.src(srcFile, {base: './html'})
-                    .pipe(debug({title: 'videochat:'}))
-                    .pipe(gulp.dest( fs.realpathSync('./trunk/videochat/web/html') ))
+                    .pipe(debug({title: 'cblive:'}))
+                    .pipe(gulp.dest( fs.realpathSync('./trunk/cblive/web/html') ))
 			}
 
 		}
