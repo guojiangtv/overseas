@@ -1,21 +1,30 @@
 const path = require('path');
 const webpack = require('webpack');
-const CleanWebpackPlugin = require('clean-webpack-plugin');
 const HashedChunkIdsPlugin = require('./config/hashedChunkIdsPlugin.js');
 
 //是否是生产环境
 const prod = process.env.NODE_ENV === 'production' ? true : false;
+const isPc = process.env.PLATFORM == 'pc' ? true : false; //是否是pc编译
 
 //webpack配置
 const eslintConfigDir = './.eslintrc.js';
 const postcssConfigDir = './config/postcss.config.js';
 const resolveConfigDir = './config/resolve.config.js';
-
-const baseEntryDir = './src/v2/mobile/';
-const outputDir = path.resolve(__dirname, './src/v2/mobile/');
-const outputPublicDir = 'http://static.joylive.tv/dist/mobile/';
-const entries = ['vue', 'axios', 'layer', 'webpack-zepto'];
-const dll_manifest_name = 'dll_manifest';
+let baseEntryDir,outputDir,outputPublicDir,entries,dll_manifest_name;
+if(isPc){
+    //PC目录配置
+    baseEntryDir = './src/v2/pc/';
+    outputDir = path.resolve(__dirname, './src/v2/pc/');
+    outputPublicDir = 'http://static.joylive.tv/dist/pc/';
+    entries = ['vue','axios','layer','jquery'];
+    dll_manifest_name = 'dll_pc_manifest';
+}else{
+    baseEntryDir = './src/v2/mobile/';
+    outputDir = path.resolve(__dirname, './src/v2/mobile/');
+    outputPublicDir = 'http://static.joylive.tv/dist/mobile/';
+    entries = ['vue', 'axios', 'layer', 'webpack-zepto'];
+    dll_manifest_name = 'dll_manifest';
+}
 
 
 module.exports = {
@@ -54,7 +63,6 @@ module.exports = {
         }]
     },
     plugins: [
-        new CleanWebpackPlugin(['./src/v2/mobile/js/lib/dll.js']),
         //keep module.id stable when vender modules does not change
         new HashedChunkIdsPlugin(),
         new webpack.HashedModuleIdsPlugin(),

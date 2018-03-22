@@ -2,7 +2,6 @@ const path = require('path');
 const webpack = require('webpack');
 const htmlWebpackPlugin = require('html-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
-// const CleanWebpackPlugin = require('clean-webpack-plugin');
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HashedChunkIdsPlugin = require('./config/hashedChunkIdsPlugin.js');
@@ -12,6 +11,8 @@ const HashedChunkIdsPlugin = require('./config/hashedChunkIdsPlugin.js');
 var glob = require('glob');
 //是否是生产环境
 var prod = process.env.NODE_ENV === 'production' ? true : false;
+//是否是pc编译
+var isPc = process.env.PLATFORM == 'pc' ? true : false;
 
 //webpack配置
 var eslintConfigDir = './.eslintrc.js' ;
@@ -22,23 +23,45 @@ var resolveConfigDir = './config/resolve.config.js';
 // var entryIgnore = require('./entryignore.json');
 
 
-//目录配置
-var baseEntryDir = './src/v2/mobile/js/';
-var entryDir = baseEntryDir + '**/*.js';
-var outputDir = path.resolve(__dirname, './dist/v2/mobile/');
-var outputPublicDir = 'http://static.joylive.tv/dist/v2/mobile/';
-var basePageEntry = './html/src/mobile/';
-var basePageOutput = './html/dist/mobile/';
+if(isPc){
+    //pc版目录配置
+    console.log('***********************PC编译*************************');
+    var baseEntryDir = './src/v2/pc/js/';
+    var entryDir = baseEntryDir + '**/*.js';
+    var outputDir = path.resolve(__dirname, './dist/v2/pc/');
+    var outputPublicDir = 'http://static.joylive.tv/dist/v2/pc/';
+    var basePageEntry = './html/src/pc/';
+    var basePageOutput = './html/dist/pc/';
 
-//clean folder
-var cleanDir = [
-    path.resolve(__dirname, 'dist')
-];
-var dll_manifest_name = 'dll_manifest';
+    //clean folder
+    var cleanDir = [
+        path.resolve(__dirname, 'dist/pc')
+    ];
 
-//入口js文件配置以及公共模块配置
-var entries = getEntry(entryDir);
-entries.vendors = ['common'];
+    var dll_manifest_name = 'dll_pc_manifest';
+    //入口js文件配置以及公共模块配置
+    var entries = getEntry(entryDir);
+    entries.vendors = ['pc_common'];
+}else{
+    //触屏版目录配置
+    console.log('***********************触屏版编译*************************');
+    var baseEntryDir = './src/v2/mobile/js/';
+    var entryDir = baseEntryDir + '**/*.js';
+    var outputDir = path.resolve(__dirname, './dist/v2/mobile/');
+    var outputPublicDir = 'http://static.joylive.tv/dist/v2/mobile/';
+    var basePageEntry = './html/src/mobile/';
+    var basePageOutput = './html/dist/mobile/';
+
+    //clean folder
+    var cleanDir = [
+        path.resolve(__dirname, 'dist/mobile')
+    ];
+    var dll_manifest_name = 'dll_manifest';
+    //入口js文件配置以及公共模块配置
+    var entries = getEntry(entryDir);
+    entries.vendors = ['common'];
+}
+
 
 console.log(entries);
 
@@ -202,7 +225,7 @@ function getEntry(globPath) {
 if (prod) {
     console.log('当前编译环境：production');
     module.exports.plugins = module.exports.plugins.concat([
-        // new CleanWebpackPlugin(cleanDir),
+        new CleanWebpackPlugin(cleanDir),
         //压缩css代码
         new OptimizeCssAssetsPlugin({
             assetNameRegExp: /\.css\.*(?!.*map)/g, //注意不要写成 /\.css$/g
