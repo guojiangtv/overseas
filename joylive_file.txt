@@ -1,12 +1,4 @@
-cblive/web/html/dist/mobile/activity/diamondWinner3.html
-static_cblive/dist/v2/mobile/css/activity/diamondWinner3.css
-static_cblive/dist/v2/mobile/css/common/common.css
-static_cblive/dist/v2/mobile/css/vendors.css
-static_cblive/dist/v2/mobile/img/activity/diamondWinner3
-static_cblive/dist/v2/mobile/js/activity/diamondWinner3.js
-static_cblive/dist/v2/mobile/js/common/common.js
-static_cblive/dist/v2/mobile/js/lib/dll.js
-static_cblive/dist/v2/mobile/js/lib/flexible.js
-static_cblive/dist/v2/mobile/js/lib/layer.js
-static_cblive/dist/v2/mobile/js/manifest.js
-static_cblive/dist/v2/mobile/js/vendors.js
+cblive/web/html/dist/pc
+cblive/web/html/pc/src
+static_cblive/dist/v2/pc
+static_cblive/src/v2/pc
