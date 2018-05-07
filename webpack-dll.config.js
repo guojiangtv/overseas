@@ -1,5 +1,6 @@
 const path = require('path');
 const webpack = require('webpack');
+const ExtractTextPlugin = require('extract-text-webpack-plugin'); //抽离css
 const HashedChunkIdsPlugin = require('./config/hashedChunkIdsPlugin.js');
 
 //是否是生产环境
@@ -10,18 +11,20 @@ const isPc = process.env.PLATFORM == 'pc' ? true : false; //是否是pc编译
 const eslintConfigDir = './.eslintrc.js';
 const postcssConfigDir = './config/postcss.config.js';
 const resolveConfigDir = './config/resolve.config.js';
-let baseEntryDir,outputDir,outputPublicDir,entries,dll_manifest_name;
+let baseEntryDir,outputDir,outputPublicDir,entries,dll_manifest_name,entryDir;
 if(isPc){
     //PC目录配置
     baseEntryDir = './src/v2/pc/';
+    entryDir = baseEntryDir + '**/*.js';
     outputDir = path.resolve(__dirname, './src/v2/pc/');
-    outputPublicDir = 'http://static.joylive.tv/dist/pc/';
+    outputPublicDir = 'https://static.cblive.tv/dist/pc/';
     entries = ['vue','axios','layer','jquery'];
     dll_manifest_name = 'dll_pc_manifest';
 }else{
     baseEntryDir = './src/v2/mobile/';
+    entryDir = baseEntryDir + '**/*.js';
     outputDir = path.resolve(__dirname, './src/v2/mobile/');
-    outputPublicDir = 'http://static.joylive.tv/dist/mobile/';
+    outputPublicDir = 'http://static.cblive.tv/dist/mobile/';
     entries = ['vue', 'axios', 'layer', 'webpack-zepto'];
     dll_manifest_name = 'dll_manifest';
 }
@@ -42,25 +45,64 @@ module.exports = {
     },
     module: {
         rules: [
-        // {
-        //     test: /\.js$/,
-        //     enforce: 'pre',
-        //     loader: 'eslint-loader',
-        //     // include: path.resolve(__dirname, entryDir),
-        //     exclude: [baseEntryDir + 'js/lib', baseEntryDir + 'js/component'],
-        //     options: {
-        //         fix: true
-        //     }
-        // }, {
-        //     test: /\.js$/,
-        //     loader: 'babel-loader',
-        //     exclude: ['node_modules', baseEntryDir + 'js/lib', baseEntryDir + 'js/component']
-        // },
-        {
-            test: /\.css$/,
-            use: ['style-loader', 'css-loader', 'postcss-loader'],
-            exclude: [baseEntryDir + 'css/lib']
-        }]
+            {
+                test: /\.vue$/,
+                loader: 'vue-loader',
+                options: {
+                    postcss: [require( postcssConfigDir )]
+                }
+            },
+            {
+                test: /\.ejs$/,
+                loader: 'ejs-loader'
+            },
+            {
+                test: /\.js$/,
+                enforce: 'pre',
+                loader: 'eslint-loader',
+                include: path.resolve(__dirname, entryDir),
+                exclude: [baseEntryDir + 'js/lib', baseEntryDir + 'js/component'],
+                options: {
+                    fix: true
+                }
+            },
+            {
+                test: /\.js$/,
+                loader: 'babel-loader?cacheDirectory=true',
+                exclude: ['node_modules', baseEntryDir + 'js/lib', baseEntryDir + 'js/component']
+            },
+            {
+                test: /\.css$/,
+                use: ['style-loader', 'css-loader', 'postcss-loader'],
+                exclude: [baseEntryDir + 'css/lib']
+            },
+            {
+                test: /\.less$/,
+                use: ExtractTextPlugin.extract(['css-loader','postcss-loader','less-loader']),
+            },
+            {
+                test: /\.(png|jpg|gif)$/,
+                loader: 'url-loader',
+                options: {
+                    limit: 512,
+                    name: function(p){
+                        let tem_path = p.split(/\\img\\/)[1];
+                        tem_path = tem_path.replace(/\\/g,'/');
+
+                        return 'img/'+tem_path + '?v=[hash:8]';
+                    }
+                }
+            },
+            {
+                test: /\.html$/,
+                use: [ {
+                    loader: 'html-loader',
+                    options: {
+                        minimize: true
+                    }
+                }],
+            }
+        ]
     },
     plugins: [
         //keep module.id stable when vender modules does not change
@@ -74,6 +116,7 @@ module.exports = {
             // 指定一个路径作为上下文环境，需要与DllReferencePlugin的context参数保持一致，建议统一设置为项目根目录
             context: __dirname,
         }),
+        new ExtractTextPlugin('css/[name].[contenthash:8].css'),
         new webpack.LoaderOptionsPlugin({
             options: {
                 eslint: require(eslintConfigDir),

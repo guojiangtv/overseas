@@ -18,7 +18,7 @@ gulp.task('webpack', function(callback) {
 	})
 })
 
-/***************** 移动待发布文件到trunk ***********************/
+/***************** 移动待到测试文件beta ***********************/
 
 var file = './joylive_file.txt'
 gulp.task('copybeta', function() {
@@ -38,12 +38,16 @@ gulp.task('copybeta', function() {
 			if(srcFile.indexOf('.') == -1){
 				srcFile = srcFile + '/**/*.*'
 			}
+
 			console.log('dir:', srcFile)
 
 			if(srcFile.indexOf('static_cblive') != -1){
-				gulp.src(srcFile, {base: './static_cblive'})
+                srcFile = srcFile.replace(/static_cblive\//,'');
+
+				gulp.src(srcFile, {base: '.'})
                     .pipe(debug({title: 'static:'}))
-                    .pipe(gulp.dest( fs.realpathSync('./beta/static') ))
+                    .pipe(gulp.dest( fs.realpathSync('./beta/static_cblive/') ))
+
 			}else{
 				srcFile = srcFile.replace('cblive/web/','')
 
@@ -59,7 +63,7 @@ gulp.task('copybeta', function() {
 
 })
 
-
+/***************** 移动待发布文件到trunk ***********************/
 gulp.task('copytrunk', function() {
 	fs.readFile(file, function(err, obj){
 		//console.log('err:', err)
@@ -83,9 +87,10 @@ gulp.task('copytrunk', function() {
 
 			if(srcFile.indexOf('static_cblive') != -1){
                 srcFile = srcFile.replace('static_cblive/','')
-				gulp.src(srcFile, {base: './dist'})
+
+				gulp.src(srcFile, {base: '.'})
                     .pipe(debug({title: 'static_cblive:'}))
-                    .pipe(gulp.dest( fs.realpathSync('./trunk/static_cblive/dist') ))
+                    .pipe(gulp.dest( fs.realpathSync('./trunk/static_cblive/') ))
 			}else{
 				srcFile = srcFile.replace('cblive/web/','')
 				gulp.src(srcFile, {base: './html'})
