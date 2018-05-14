@@ -1,20 +1,24 @@
 .DS_Store
 node_modules/
 
-html/
+html/*
 !html/.gitkeep
-src/
+src/*
 !src/.gitkeep
-dist/
+dist/*
 !dist/.gitkeep
-beta/
+beta/cblive/web/*
 !beta/cblive/web/.gitkeep
+beta/static_cblive/src/*
 !beta/static_cblive/src/.gitkeep
+beta/static_cblive/dist/*
 !beta/static_cblive/dist/.gitkeep
-trunk/
-!trunk/cblive/web/.gitkeep
-!trunk/static_cblive/src/.gitkeep
-!trunk/static_cblive/dist/.gitkeep
+trunk/cblive/web/*
+!/trunk/cblive/web/.gitkeep
+/trunk/static_cblive/src/*
+!/trunk/static_cblive/src/.gitkeep
+/trunk/static_cblive/dist/*
+!/trunk/static_cblive/dist/.gitkeep
 
 nginx-1.12.0/logs/
 
