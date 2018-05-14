@@ -28,10 +28,10 @@ yarn install安装必要的项目依赖和开发依赖包
 1. yarn pc_watch 实时编译
 2. yarn pc_deploy 编译压缩添加版本号
 
+
 #### 文件发布
 * gulp copybeta 将文件列表中文件移动至相应的beta文件夹
 * gulp copytrunk 将文件列表中文件移动至相应的trunk文件夹
-
 
 
 
