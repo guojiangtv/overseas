@@ -49,7 +49,7 @@ if(isPc){
     var baseEntryDir = './src/v2/mobile/';
     var entryDir = baseEntryDir + '**/*.js';
     var outputDir = path.resolve(__dirname, './dist/v2/mobile/');
-    var outputPublicDir = 'https://static.cblive.tv/dist/v2/mobile/';
+    var outputPublicDir = 'http://static.cblive.tv/dist/v2/mobile/';
     var basePageEntry = './html/src/mobile/';
     var basePageOutput = './html/dist/mobile/';
 
