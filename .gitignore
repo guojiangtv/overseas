@@ -7,18 +7,11 @@ src/*
 !src/.gitkeep
 dist/*
 !dist/.gitkeep
-beta/cblive/web/*
-!beta/cblive/web/.gitkeep
-beta/static_cblive/src/*
-!beta/static_cblive/src/.gitkeep
-beta/static_cblive/dist/*
-!beta/static_cblive/dist/.gitkeep
-trunk/cblive/web/*
-!/trunk/cblive/web/.gitkeep
-/trunk/static_cblive/src/*
-!/trunk/static_cblive/src/.gitkeep
-/trunk/static_cblive/dist/*
-!/trunk/static_cblive/dist/.gitkeep
+
+beta/*
+!beta/.gitkeep
+trunk/*
+!trunk/.gitkeep
 
 nginx-1.12.0/logs/
 
