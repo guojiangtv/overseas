@@ -53,7 +53,7 @@ gulp.task('copybeta', function() {
 
                 gulp.src(srcFile, { base: './html' })
                     .pipe(debug({ title: 'cblive:' }))
-                    .pipe(gulp.dest(fs.realpathSync('./beta/cblive/web/html')));
+                    .pipe(gulp.dest(fs.realpathSync('./beta/html')));
             }
 
         }
@@ -95,7 +95,7 @@ gulp.task('copytrunk', function() {
                 srcFile = srcFile.replace('cblive/web/', '');
                 gulp.src(srcFile, { base: './html' })
                     .pipe(debug({ title: 'cblive:' }))
-                    .pipe(gulp.dest(fs.realpathSync('./trunk/cblive/web/html')));
+                    .pipe(gulp.dest(fs.realpathSync('./trunk/html')));
             }
 
         }
