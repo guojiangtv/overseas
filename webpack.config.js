@@ -16,50 +16,51 @@ var prod = process.env.NODE_ENV === 'production' ? true : false;
 var isPc = process.env.PLATFORM == 'pc' ? true : false;
 
 //webpack配置
-var eslintConfigDir = './.eslintrc.js' ;
+var eslintConfigDir = './.eslintrc.js';
 var postcssConfigDir = './config/postcss.config.js';
 var resolveConfigDir = './config/resolve.config.js';
 
 //忽略不必要编译的文件
 // var entryIgnore = require('./entryignore.json');
 
+let baseEntryDir, entryDir, outputDir, outputPublicDir, basePageEntry, basePageOutput, cleanDir, dll_manifest_name, entries;
 
-if(isPc){
+if (isPc) {
     //pc版目录配置
     console.log('***********************PC编译*************************');
-    var baseEntryDir = './src/v2/pc/';
-    var entryDir = baseEntryDir + '**/*.js';
-    var outputDir = path.resolve(__dirname, './dist/v2/pc/');
-    var outputPublicDir = 'https://static.cblive.tv/dist/v2/pc/';
-    var basePageEntry = './html/src/pc/';
-    var basePageOutput = './html/dist/pc/';
+    baseEntryDir = './src/v2/pc/';
+    entryDir = baseEntryDir + '**/*.js';
+    outputDir = path.resolve(__dirname, './dist/v2/pc/');
+    outputPublicDir = 'https://static.cblive.tv/dist/v2/pc/';
+    basePageEntry = './html/src/pc/';
+    basePageOutput = './html/dist/pc/';
 
     //clean folder
-    var cleanDir = [
+    cleanDir = [
         path.resolve(__dirname, 'dist/v2/pc'),
     ];
 
-    var dll_manifest_name = 'dll_pc_manifest';
+    dll_manifest_name = 'dll_pc_manifest';
     //入口js文件配置以及公共模块配置
-    var entries = getEntry(entryDir);
+    entries = getEntry(entryDir);
     entries.vendors = ['common'];
-}else{
+} else {
     //触屏版目录配置
     console.log('***********************触屏版编译*************************');
-    var baseEntryDir = './src/v2/mobile/';
-    var entryDir = baseEntryDir + '**/*.js';
-    var outputDir = path.resolve(__dirname, './dist/v2/mobile/');
-    var outputPublicDir = 'http://static.cblive.tv/dist/v2/mobile/';
-    var basePageEntry = './html/src/mobile/';
-    var basePageOutput = './html/dist/mobile/';
+    baseEntryDir = './src/v2/mobile/';
+    entryDir = baseEntryDir + '**/*.js';
+    outputDir = path.resolve(__dirname, './dist/v2/mobile/');
+    outputPublicDir = 'http://static.cblive.tv/dist/v2/mobile/';
+    basePageEntry = './html/src/mobile/';
+    basePageOutput = './html/dist/mobile/';
 
     //clean folder
-    var cleanDir = [
+    cleanDir = [
         path.resolve(__dirname, 'dist/v2/mobile')
     ];
-    var dll_manifest_name = 'dll_manifest';
+    dll_manifest_name = 'dll_manifest';
     //入口js文件配置以及公共模块配置
-    var entries = getEntry(entryDir);
+    entries = getEntry(entryDir);
     entries.vendors = ['common'];
 }
 
@@ -74,6 +75,30 @@ module.exports = {
         path: outputDir,
         publicPath: outputPublicDir,
         filename: 'js/[name].js?v=[chunkhash:8]'
+    },
+    devServer: {
+        //设置服务器主文件夹，默认情况下，从项目的根目录提供文件
+        contentBase: outputDir,
+        //自动开启默认浏览器
+        //open: true,
+        //开启热模块替换,只重载页面中变化了的部分
+        //hot: true,
+        //开启gzip压缩
+        compress: true,
+        //使用inlilne模式,会触发页面的动态重载
+        inline: true,
+        //当编译错误的时候，网页上显示错误信息
+        overlay: {
+            warnings: true,
+            errors: true
+        },
+        //浏览器自动打开的文件夹
+        //openPage: 'html/',
+        //只在shell中展示错误信息
+        //stats: 'errors-only',
+        //设置域名，默认是localhost
+        host: 'm.joylive.tv',
+        port:3000
     },
     module: {
         rules: [{
@@ -119,7 +144,7 @@ module.exports = {
         }, {
             test: /\.(eot|svg|ttf|woff|woff2)(\?\S*)?$/,
             loader: 'file-loader'
-        },{
+        }, {
             test: /\.html$/,
             use: [{
                 loader: 'html-loader',
