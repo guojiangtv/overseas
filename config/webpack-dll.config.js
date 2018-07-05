@@ -10,17 +10,15 @@ const isPc = process.env.PLATFORM == 'pc' ? true : false;
 //webpack配置
 const postcssConfigDir = '../.postcssrc.js';
 const resolveConfigDir = './resolve.config.js';
-let outputDir, outputPublicDir, entries, manifest_name;
+let outputDir, entries, manifest_name;
 
 if (isPc) {
     //PC目录配置
-    outputDir = path.resolve(__dirname, '../src/v2/pc/');
-    outputPublicDir = 'https://static.cblive.tv/dist/pc/';
+    outputDir = path.resolve(__dirname, '../src/v2/pc');
     entries = ['vue', 'axios', 'layer', 'jquery'];
     manifest_name = 'dll_pc_manifest';
 } else {
-    outputDir = path.resolve(__dirname, '../src/v2/mobile/');
-    outputPublicDir = 'http://static.cblive.tv/dist/mobile/';
+    outputDir = path.resolve(__dirname, '../src/v2/mobile');
     entries = ['vue', 'axios', 'layer', 'webpack-zepto'];
     manifest_name = 'dll_manifest';
 }
@@ -34,7 +32,6 @@ module.exports = {
     },
     output: {
         path: outputDir,
-        publicPath: outputPublicDir,
         filename: 'js/lib/[name].[chunkhash:8].js',
         library: '[name]_library',
         /*libraryTarget: 'umd'*/
@@ -44,7 +41,10 @@ module.exports = {
             {
                 test: /\.js$/,
                 loader: 'babel-loader?cacheDirectory=true',
-                include:entries
+                include:entries,
+                options: {
+                    presets: ['env']
+                }
             },
             {
                 test: /\.css$/,
@@ -59,6 +59,7 @@ module.exports = {
                 NODE_ENV: JSON.stringify('production')
             }
         }),
+
         //生成dll
         new webpack.DllPlugin({
             // 本Dll文件中各模块的索引，供DllReferencePlugin读取使用

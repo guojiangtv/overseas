@@ -10,23 +10,18 @@ const isPc = process.env.PLATFORM == 'pc' ? true : false;
 //webpack配置
 const postcssConfigDir = '../.postcssrc.js';
 const resolveConfigDir = './resolve.config.js';
-let baseEntryDir, outputDir, outputPublicDir, entries, manifest_name;
+let outputDir, entries, manifest_name;
 
 if (isPc) {
     //PC目录配置
-    baseEntryDir = '../src/v2/pc/';
-    outputDir = path.resolve(__dirname, '../src/v2/pc/');
-    outputPublicDir = 'https://static.cblive.tv/dist/pc/';
+    outputDir = path.resolve(__dirname, '../src/v2/pc');
     entries = ['vue', 'axios', 'layer', 'jquery'];
     manifest_name = 'dll_pc_manifest';
 } else {
-    baseEntryDir = '../src/v2/mobile/';
-    outputDir = path.resolve(__dirname, '../src/v2/mobile/');
-    outputPublicDir = 'http://static.cblive.tv/dist/mobile/';
+    outputDir = path.resolve(__dirname, '../src/v2/mobile');
     entries = ['common'];
     manifest_name = 'vendor_manifest';
 }
-
 
 module.exports = {
     /* 输入文件 */
@@ -36,7 +31,6 @@ module.exports = {
     },
     output: {
         path: outputDir,
-        publicPath: outputPublicDir,
         filename: 'js/lib/[name].[chunkhash:8].js',
         library: '[name]_library',
         /*libraryTarget: 'umd'*/
@@ -45,7 +39,9 @@ module.exports = {
         rules: [{
             test: /\.js$/,
             loader: 'babel-loader?cacheDirectory=true',
-            include: entries
+            options: {
+                presets: ['env']
+            }
         }, {
             test: /\.less$/,
             use: ExtractTextPlugin.extract(['css-loader', 'postcss-loader', 'less-loader']),
@@ -55,10 +51,15 @@ module.exports = {
             options: {
                 limit: 5120,
                 name: function(p) {
-                    let tem_path = p.split(/img/)[1];
-                    // let tem_path = p.split(/\\img\\/)[1];
-                    // tem_path = tem_path.replace(/\\/g, '/');
-                    return 'img' + tem_path + '?v=[hash:8]';
+                    let tem_path;
+                    if(p.indexOf('/') != -1){
+                        tem_path = p.split(/\/img\//)[1];
+                    }else{
+                        tem_path = p.split(/\\img\\/)[1];
+                    }
+                    tem_path = tem_path.replace(/\\/g,'/');
+
+                    return 'img/'+tem_path + '?v=[hash:8]';
                 }
             }
         }]

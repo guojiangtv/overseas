@@ -36,12 +36,8 @@ entryArr.map(function(item){
         htmlArr.push(item);
     }
 });
-// console.log(jsArr);
-// console.log(htmlArr);
 
-
-
-let baseEntryDir, entryDir, outputDir, outputPublicDir, basePageEntry, basePageOutput, cleanDir, dll_manifest_name,vendor_manifest_name, entries={};
+let baseEntryDir, entryDir, outputDir, outputPublicDir, basePageEntry, basePageOutput, dll_manifest_name,vendor_manifest_name, entries={};
 
 if (isPc) {
     //pc版目录配置
@@ -83,7 +79,6 @@ if (isPc) {
 }
 
 
-console.log(entries);
 
 module.exports = {
     /* 输入文件 */
@@ -91,32 +86,8 @@ module.exports = {
     entry: entries,
     output: {
         path: outputDir,
-        // publicPath: outputPublicDir,
+        publicPath: outputPublicDir,
         filename: 'js/[name].[chunkhash:8].js'
-    },
-    devServer: {
-        //设置服务器主文件夹，默认情况下，从项目的根目录提供文件
-        contentBase: path.resolve(__dirname, '../dist/v2/mobile'),
-        //自动开启默认浏览器
-        open: true,
-        //浏览器自动打开的文件夹
-        openPage: '/html',
-        //开启热模块替换,只重载页面中变化了的部分
-        //hot: true,
-        //开启gzip压缩
-        compress: true,
-        //使用inlilne模式,会触发页面的动态重载
-        inline: true,
-        //当编译错误的时候，网页上显示错误信息
-        overlay: {
-            warnings: true,
-            errors: true
-        },
-        //只在shell中展示错误信息
-        //stats: 'errors-only',
-        //设置域名，默认是localhost
-        host: 'm.joylive.tv',
-        port: 3000
     },
     module: {
         rules: [{
@@ -176,6 +147,12 @@ module.exports = {
         }]
     },
     plugins: [
+        new webpack.DefinePlugin({
+            'process.env': {
+                NODE_ENV: JSON.stringify('production')
+            }
+        }),
+
         new HappyPack({
             id: 'ejs',
             threadPool: HappyThreadPool,
@@ -196,30 +173,44 @@ module.exports = {
             threadPool: HappyThreadPool,
             loaders: ['babel-loader?cacheDirectory=true']
         }),
-        //将dll.js文件移到dist文件夹内
-        new CopyWebpackPlugin([
-            { from: baseEntryDir + '/js/lib', to: outputDir + '/js/lib' },
-            { from: baseEntryDir + '/css/lib', to: outputDir + '/css/lib' },
-        ]),
 
+        //压缩css代码
+        new OptimizeCssAssetsPlugin({
+            assetNameRegExp: /\.css\.*(?!.*map)/g, //注意不要写成 /\.css$/g
+            cssProcessor: require('cssnano'),
+            cssProcessorOptions: {
+                discardComments: { removeAll: true },
+                // 避免 cssnano 重新计算 z-index
+                safe: true,
+                autoprefixer: false
+            },
+            canPrint: true
+        }),
+        //压缩JS代码
+        new UglifyJsPlugin({
+            cache: true,
+            parallel: true,
+            uglifyOptions: {
+                ie8: false,
+                output: {
+                    comments: false,
+                    beautify: false,
+                },
+                compress: true,
+                warnings: false
+            }
+        }),
         new webpack.DllReferencePlugin({
-            // 指定一个路径作为上下文环境，需要与DllPlugin的context参数保持一致，建议统一设置为项目根目录
             context: __dirname,
-            // 指定manifest.json
             manifest: require('../manifest/' + dll_manifest_name + '.json'),
-            // 当前Dll的所有内容都会存放在这个参数指定变量名的一个全局变量下，注意与DllPlugin的name参数保持一致
             name: 'dll_library',
         }),
         new webpack.DllReferencePlugin({
-            // 指定一个路径作为上下文环境，需要与DllPlugin的context参数保持一致，建议统一设置为项目根目录
             context: __dirname,
-            // 指定manifest.json
             manifest: require('../manifest/' + vendor_manifest_name + '.json'),
-            // 当前Dll的所有内容都会存放在这个参数指定变量名的一个全局变量下，注意与DllPlugin的name参数保持一致
             name: 'vendor_library',
         }),
-
-
+        //提取css文件
         new ExtractTextPlugin('css/[name].[contenthash:8].css'),
 
         new webpack.LoaderOptionsPlugin({
@@ -232,7 +223,6 @@ module.exports = {
         // 提取公共模块
         new webpack.optimize.CommonsChunkPlugin({
             names: ['manifest'], // 公共模块的名称
-            //filename: 'js/vendors-[hash:6].js', // 公共模块的名称
             chunks: 'manifest', // chunks是需要提取的模块
             minChunks: Infinity //公共模块最小被引用的次数
         }),
@@ -248,48 +238,9 @@ module.exports = {
     ]
 };
 
-function getLatestFile(path){
-    let new_path = path.replace(/\./g, '.**.');
-    let latest_file = '';
-    let latest_file_mtime = 0;
-
-    glob.sync(baseEntryDir + '/' + new_path).forEach(function(file){
-        let fileInfo = fs.statSync(file);
-        let file_mtime = +new Date(fileInfo.mtime);
-
-        latest_file = file_mtime > latest_file_mtime ? file : latest_file;
-        latest_file_mtime = file_mtime > latest_file_mtime ? file_mtime : latest_file_mtime;
-    });
-    return latest_file.replace(/^.*\/(js\/|css\/)/ig, '$1');
-}
 
 
 /***** 生成组合后的html *****/
-
-// var pages = getEntry(basePageEntry + '/**/*.ejs');
-// for (var pathname in pages) {
-//     var conf = {
-//         // html模板文件输入路径
-//         template: path.resolve(__dirname, basePageEntry +'/'+ pathname + '.js'),
-//         // html文件输出路径
-//         filename: path.resolve(__dirname, basePageOutput +'/'+ pathname + '.html'),
-//         inject: true,
-//         cache: true, //只改动变动的文件
-//         minify: {
-//             removeComments: true,
-//             collapseWhitespace: false
-//         }
-//     };
-//     //根据chunks提取页面js,css和公共verdors
-//     if (pathname in module.exports.entry) {
-//         conf.chunks = [pathname, 'manifest'];
-//     } else {
-//         conf.chunks = ['manifest'];
-//     }
-
-//     module.exports.plugins.push(new htmlWebpackPlugin(conf));
-// }
-
 htmlArr.map(function(item){
     item = item.slice(21,-3);
     var conf = {
@@ -310,78 +261,28 @@ htmlArr.map(function(item){
     } else {
         conf.chunks = ['manifest'];
     }
-    console.log(conf)
     module.exports.plugins.push(new htmlWebpackPlugin(conf));
 });
 
+function getLatestFile(path){
+    let new_path = path.replace(/\./g, '.**.');
+    let latest_file = '';
+    let latest_file_mtime = 0;
 
-function getEntry(globPath) {
-    // var entries = {};
-    // glob.sync(globPath).forEach(function(entry) {
-    //     //排出layouts内的公共文件
-    //     if (entry.indexOf('layouts') == -1 && entry.indexOf('lib') == -1 && entry.indexOf('components') == -1) {
+    glob.sync(baseEntryDir + '/' + new_path).forEach(function(file){
+        let fileInfo = fs.statSync(file);
+        let file_mtime = +new Date(fileInfo.mtime);
 
-    //         //判断是js文件还是html模板文件
-    //         let isJsFile = entry.indexOf('.js') !== -1;
-    //         let dirArr = isJsFile ?
-    //             entry.split('/js/')[1].split('.js')[0] :
-    //             entry.split('/html/')[1].split('.ejs')[0];
-    //         // basename = dirArr.join('/');
-
-    //         // if (entryIgnore.indexOf(basename) == -1) {
-    //         entries[dirArr] = entry;
-    //         // }
-
-    //     }
-    // });
-    // return entries;
-    globPath.forEach(function(item){
-        //判断是js文件还是html模板文件
-        let isJsFile = item.indexOf('.js') !== -1;
-        let dirArr = isJsFile ?
-            item.split('/js/')[1].split('.js')[0] :
-            item.split('/html/')[1].split('.ejs')[0];
-        entries[dirArr] = item;
-
+        latest_file = file_mtime > latest_file_mtime ? file : latest_file;
+        latest_file_mtime = file_mtime > latest_file_mtime ? file_mtime : latest_file_mtime;
     });
-    return entries;
-
+    return latest_file.replace(/^.*\/(js\/|css\/)/ig, '$1');
 }
 
-
-/***** 区分开发环境和生产环境 *****/
-
-if (prod) {
-    console.log('当前编译环境：production');
-    module.exports.plugins = module.exports.plugins.concat([
-        new CleanWebpackPlugin(cleanDir),
-        //压缩css代码
-        new OptimizeCssAssetsPlugin({
-            assetNameRegExp: /\.css\.*(?!.*map)/g, //注意不要写成 /\.css$/g
-            cssProcessor: require('cssnano'),
-            cssProcessorOptions: {
-                discardComments: { removeAll: true },
-                // 避免 cssnano 重新计算 z-index
-                safe: true
-            },
-            canPrint: true
-        }),
-        //压缩JS代码
-        new UglifyJsPlugin({
-            cache: true,
-            parallel: true,
-            uglifyOptions: {
-                ie8: false,
-                output: {
-                    comments: false,
-                    beautify: false,
-                },
-                compress: true,
-                warnings: false
-            }
-        }),
-    ]);
-} else {
-    console.log('当前编译环境：dev');
-    module.exports.devtool = 'inline-source-map';
+function getEntry(globPath) {
+    globPath.forEach(function(item){
+        let dirArr = item.split('/js/')[1].split('.js')[0];
+        entries[dirArr] = item;
+    });
+    return entries;
 }
