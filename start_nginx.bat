@@ -1,4 +1,4 @@
 @echo off
-cd F:\overseas\nginx-1.12.0\
+cd F:\guojiang\nginx\
 start nginx.exe
 exit

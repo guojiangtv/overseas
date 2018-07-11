@@ -1,5 +1,10 @@
 const path = require('path');
 const webpack = require('webpack');
+const HappyPack = require('happypack');
+const os = require('os');
+const HappyThreadPool = HappyPack.ThreadPool({ size: os.cpus().length});
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const BrowserSyncPlugin = require('browser-sync-webpack-plugin');
 const htmlWebpackPlugin = require('html-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
@@ -9,57 +14,58 @@ const CleanWebpackPlugin = require('clean-webpack-plugin');
 
 
 //路径模式匹配模块glob
-var glob = require('glob');
+let glob = require('glob');
 //是否是生产环境
-var prod = process.env.NODE_ENV === 'production' ? true : false;
+let prod = process.env.NODE_ENV === 'production' ? true : false;
 //是否是pc编译
-var isPc = process.env.PLATFORM == 'pc' ? true : false;
+let isPc = process.env.PLATFORM == 'pc' ? true : false;
 
 //webpack配置
-var eslintConfigDir = './.eslintrc.js' ;
-var postcssConfigDir = './config/postcss.config.js';
-var resolveConfigDir = './config/resolve.config.js';
+let eslintConfigDir = './.eslintrc.js' ;
+let postcssConfigDir = './config/postcss.config.js';
+let resolveConfigDir = './config/resolve.config.js';
 
 //忽略不必要编译的文件
 // var entryIgnore = require('./entryignore.json');
-
+let baseEntryDir,entryDir,outputDir,outputPublicDir,basePageEntry,basePageOutput,cleanDir,dll_manifest_name,entries,browserSyncBaseDir;
 
 if(isPc){
     //pc版目录配置
     console.log('***********************PC编译*************************');
-    var baseEntryDir = './src/v2/pc/';
-    var entryDir = baseEntryDir + '**/*.js';
-    var outputDir = path.resolve(__dirname, './dist/v2/pc/');
-    var outputPublicDir = 'https://static.cblive.tv/dist/v2/pc/';
-    var basePageEntry = './html/src/pc/';
-    var basePageOutput = './html/dist/pc/';
-
+    baseEntryDir = './src/v2/pc/';
+    entryDir = baseEntryDir + '**/*.js';
+    outputDir = path.resolve(__dirname, './dist/v2/pc/');
+    outputPublicDir = 'https://static.cblive.tv/dist/v2/pc/';
+    basePageEntry = './html/src/pc/';
+    basePageOutput = './html/dist/pc/';
+    browserSyncBaseDir = './html/dist/pc';
     //clean folder
-    var cleanDir = [
+    cleanDir = [
         path.resolve(__dirname, 'dist/v2/pc'),
     ];
 
-    var dll_manifest_name = 'dll_pc_manifest';
+    dll_manifest_name = 'dll_pc_manifest';
     //入口js文件配置以及公共模块配置
-    var entries = getEntry(entryDir);
+    entries = getEntry(entryDir);
     entries.vendors = ['common'];
 }else{
     //触屏版目录配置
     console.log('***********************触屏版编译*************************');
-    var baseEntryDir = './src/v2/mobile/';
-    var entryDir = baseEntryDir + '**/*.js';
-    var outputDir = path.resolve(__dirname, './dist/v2/mobile/');
-    var outputPublicDir = 'http://static.cblive.tv/dist/v2/mobile/';
-    var basePageEntry = './html/src/mobile/';
-    var basePageOutput = './html/dist/mobile/';
+    baseEntryDir = './src/v2/mobile/';
+    entryDir = baseEntryDir + '**/*.js';
+    outputDir = path.resolve(__dirname, './dist/v2/mobile/');
+    outputPublicDir = 'http://static.cblive.tv/dist/v2/mobile/';
+    basePageEntry = './html/src/mobile/';
+    basePageOutput = './html/dist/mobile/';
+    browserSyncBaseDir = './html/dist/mobile/';
 
     //clean folder
-    var cleanDir = [
+    cleanDir = [
         path.resolve(__dirname, 'dist/v2/mobile')
     ];
-    var dll_manifest_name = 'dll_manifest';
+    dll_manifest_name = 'dll_manifest';
     //入口js文件配置以及公共模块配置
-    var entries = getEntry(entryDir);
+    entries = getEntry(entryDir);
     entries.vendors = ['common'];
 }
 
@@ -84,21 +90,18 @@ module.exports = {
             }
         }, {
             test: /\.ejs$/,
-            loader: 'ejs-loader'
+            use: 'happypack/loader?id=ejs'
         }, {
             test: /\.js$/,
             enforce: 'pre',
-            loader: 'eslint-loader',
+            use: 'happypack/loader?id=js',
             include: path.resolve(__dirname, entryDir),
             exclude: [baseEntryDir + 'js/lib', baseEntryDir + 'js/component'],
-            options: {
-                fix: true
-            }
         }, {
             test: /\.js$/,
-            loader: 'babel-loader',
+            use: 'happypack/loader?id=babel',
             exclude: ['node_modules', baseEntryDir + 'js/lib', baseEntryDir + 'js/component']
-        }, {
+        },  {
             test: /\.css$/,
             use: ['style-loader', 'css-loader', 'postcss-loader'],
             exclude: [baseEntryDir + 'css/lib']
@@ -130,6 +133,32 @@ module.exports = {
         }]
     },
     plugins: [
+        new HappyPack({
+            id: 'ejs',
+            threadPool: HappyThreadPool,
+            loaders: ['ejs-loader']
+        }),
+        new HappyPack({
+            id: 'js',
+            threadPool: HappyThreadPool,
+            loaders: [{
+                loader: 'eslint-loader',
+                options: {
+                    fix: true
+                }
+            }]
+        }),
+        new HappyPack({
+            id: 'babel',
+            threadPool: HappyThreadPool,
+            loaders: ['babel-loader?cacheDirectory=true']
+        }),
+        //浏览器同步刷新
+        new BrowserSyncPlugin({
+            port: 3000,
+            server: { baseDir: [browserSyncBaseDir] }
+        }),
+
         //将dll.js文件移到dist文件夹内
         new CopyWebpackPlugin([
             { from: baseEntryDir + '/js/lib', to: outputDir + '/js/lib' },
@@ -237,20 +266,25 @@ if (prod) {
             cssProcessorOptions: {
                 discardComments: { removeAll: true },
                 // 避免 cssnano 重新计算 z-index
-                safe: true
+                safe: true,
+                autoprefixer: false
             },
             canPrint: true
         }),
         //压缩JS代码
-        new webpack.optimize.UglifyJsPlugin({
-            compress: {
+        new UglifyJsPlugin({
+            cache: true,
+            parallel: true,
+            uglifyOptions: {
+                ie8: false,
+                output: {
+                    comments: false,
+                    beautify: false,
+                },
+                compress: true,
                 warnings: false
-            },
-            //sourceMap: true,
-            output: {
-                comments: false, // 去掉注释内容
             }
-        })
+        }),
     ]);
 } else {
     console.log('当前编译环境：dev');
