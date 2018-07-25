@@ -1,2 +1,0 @@
-./src/v2/mobile/js/activity/worldCup2.js
-./src/v2/mobile/html/activity/worldCup2.js

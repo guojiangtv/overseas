@@ -25,19 +25,10 @@ let isPc = process.env.PLATFORM == 'pc' ? true : false;
 let eslintConfigDir = './.eslintrc.js' ;
 let postcssConfigDir = './config/postcss.config.js';
 let resolveConfigDir = './config/resolve.config.js';
-//入口文件
-let entry = fs.readFileSync(path.resolve(__dirname,'./entry.txt'));
-const entryArr = entry.toString().split('\n');
-let jsArr=[],htmlArr=[];
-entryArr.map(function(item){
-    if(item.indexOf('/js/') !== -1){
-        jsArr.push(item);
-    }
-    if(item.indexOf('/html/')!== -1 ){
-        htmlArr.push(item);
-    }
-});
 
+
+//忽略不必要编译的文件
+// var entryIgnore = require('./entryignore.json');
 let baseEntryDir,entryDir,outputDir,outputPublicDir,basePageEntry,basePageOutput,cleanDir,dll_manifest_name,entries={},browserSyncBaseDir;
 
 if(isPc){
@@ -76,8 +67,7 @@ if(isPc){
     ];
     dll_manifest_name = 'dll_manifest';
     //入口js文件配置以及公共模块配置
-    //entries = getEntry(entryDir);
-    entries = getEntry(jsArr);
+    entries = getEntry(entryDir);
     entries.vendors = ['common'];
 }
 
@@ -206,13 +196,14 @@ module.exports = {
     ]
 };
 
-htmlArr.map(function(item){
-    item = item.slice(21,-3);
+/***** 生成组合后的html *****/
+var pages = getEntry(basePageEntry + '**/*.ejs');
+for (var pathname in pages) {
     var conf = {
         // html模板文件输入路径
-        template: path.resolve(__dirname, basePageEntry +'/'+ item +'.js'),
+        template: path.resolve(__dirname, basePageEntry + pathname + '.js'),
         // html文件输出路径
-        filename: path.resolve(__dirname, basePageOutput +'/'+ item + '.html'),
+        filename: path.resolve(__dirname, basePageOutput + pathname + '.html'),
         inject: true,
         cache: true, //只改动变动的文件
         minify: {
@@ -221,20 +212,43 @@ htmlArr.map(function(item){
         }
     };
     //根据chunks提取页面js,css和公共verdors
-    if (item in entries) {
-        conf.chunks = [item, 'manifest'];
+    if (pathname in module.exports.entry) {
+        conf.chunks = [pathname, 'vendors'];
     } else {
-        conf.chunks = ['manifest'];
+        conf.chunks = ['vendors'];
     }
+
     module.exports.plugins.push(new htmlWebpackPlugin(conf));
-});
+}
 
 
+/**
+ * [获取文件列表(仅支持js和ejs文件)：输出正确的js和html路径]
+ * @param  {[type]} globPath [description]
+ * @return {[type]}          [description]
+ */
 function getEntry(globPath) {
-    globPath.forEach(function(item){
-        let dirArr = item.split('/js/')[1].split('.js')[0];
-        entries[dirArr] = item;
+    var entries = {};
+    glob.sync(globPath).forEach(function(entry) {
+
+        //排出layouts内的公共文件
+        if (entry.indexOf('layouts') == -1 && entry.indexOf('lib') == -1 && entry.indexOf('components') == -1) {
+
+            //判断是js文件还是html模板文件
+            let isJsFile = entry.indexOf('.js') !== -1;
+            let dirArr = isJsFile ?
+                entry.split('/js/')[1].split('.js')[0] :
+                entry.split(basePageEntry)[1].split('.ejs')[0];
+
+            // basename = dirArr.join('/');
+
+            // if (entryIgnore.indexOf(basename) == -1) {
+            entries[dirArr] = entry;
+            // }
+
+        }
     });
+
     return entries;
 }
 
