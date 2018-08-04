@@ -1,5 +1,5 @@
 import Mock from 'mockjs';
-Mock.mock('/worldcup/userinfo', {
+Mock.mock('/worldCup/userinfo', {
     'errno': 0,
     'msg': '',
     'data': {
@@ -14,7 +14,7 @@ Mock.mock('/worldcup/userinfo', {
         'chance': 10 //用户拥有的抽奖次数
     }
 });
-Mock.mock('/worldcup/lottery', {
+Mock.mock('/worldCup/lottery', {
     'errno': 0,
     'msg': '',
     'data':{
@@ -24,7 +24,7 @@ Mock.mock('/worldcup/lottery', {
         }
     }
 });
-Mock.mock('/worldcup/midrank', {
+Mock.mock('/worldCup/modrank', {
     'errno': 0,
     'msg': '',
     'data|10':[
@@ -40,7 +40,7 @@ Mock.mock('/worldcup/midrank', {
         }
     ]
 });
-Mock.mock('/worldcup/userrank', {
+Mock.mock('/worldCup/userrank', {
     'errno': 0,
     'msg': '',
     'data|10':[
@@ -54,7 +54,7 @@ Mock.mock('/worldcup/userrank', {
         }
     ]
 });
-Mock.mock('/worldcup/love?mid=123', {
+Mock.mock('/worldCup/love?mid=123', {
     'errno': 0,
     'msg': '',
     'data':{}
