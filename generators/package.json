@@ -1,0 +1,10 @@
+{
+  "name": "generator-overseas",
+  "version": "1.0.0",
+  "description": "",
+  "main": "activity/index.js",
+  "files": ["activity"],
+  "keywords": ["yeoman-generator"],
+  "author": "jesse",
+  "license": "ISC"
+}
