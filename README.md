@@ -1,3 +1,6 @@
+#### yeoman工具使用方法
+yeoman已集成到项目脚手架中
+执行`yarn activity`命令可启动yeoman，填写活动名称，活动标题，选择项目模板pc或mobile，即可自动生成相应的文件
 #### 海外项目中mockjs使用方法
 在前后端分离开发模式下，为了方便前端自己模拟数据，引入mockjs库，目前已在项目脚手架中安装。
 已下载脚手架的同学可以直接更新package.js，yarn.lock 这两文件，然后执行npm install
