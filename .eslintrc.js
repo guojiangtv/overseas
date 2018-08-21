@@ -5,9 +5,14 @@ module.exports = {
         "es6": true
     },
     "extends": "eslint:recommended",
+    "parser": "vue-eslint-parser",
     "parserOptions": {
+        "parser": 'babel-eslint',
         "sourceType": "module"
     },
+    "plugins": [
+      'vue'
+    ],
     "rules": {
         "indent": [
             "error",
