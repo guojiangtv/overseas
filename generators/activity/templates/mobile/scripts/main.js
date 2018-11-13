@@ -3,9 +3,6 @@ import Vue from 'vue';
 import axios from 'axios';
 import common from 'common';
 
-//ios中激活active伪类
-document.body.addEventListener('touchstart', function() {});
-
 new Vue({
     el: '#app',
     data: {},
@@ -20,10 +17,10 @@ new Vue({
         //点击关注按钮，关注主播
         attention(uid, index) {
             axios.get('***', {
-                    params: {
-                        mid: uid
-                    }
-                })
+                params: {
+                    mid: uid
+                }
+            })
                 .then(res => {
                     if (typeof data == 'string') {
                         data = JSON.parse(data);

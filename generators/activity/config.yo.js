@@ -4,15 +4,15 @@ module.exports = {
     outputStaticDir: '/guojiang/overseas/src/v2', // 静态文件相关输出路径
 
     /* Templates Relative Path */
-    outputHtmlPCDir: 'pc/activity',
-    outputHtmlMobileDir: 'mobile/activity',
+    outputHtmlPCDir: 'pc/',
+    outputHtmlMobileDir: 'mobile/',
 
     /* Static Resource Relative Path */
-    outputStaticPCDirForJS: 'pc/js/activity',
-    outputStaticPCDirForStyles: 'pc/css/activity',
-    outputStaticPCDirForImgs: 'pc/img/activity',
+    outputStaticPCDirForJS: 'pc/js/',
+    outputStaticPCDirForStyles: 'pc/css/',
+    outputStaticPCDirForImgs: 'pc/img/',
 
-    outputStaticMobileDirForJS: 'mobile/js/activity',
-    outputStaticMobileDirForStyles: 'mobile/css/activity',
-    outputStaticMobileDirForImgs: 'mobile/img/activity'
+    outputStaticMobileDirForJS: 'mobile/js/',
+    outputStaticMobileDirForStyles: 'mobile/css/',
+    outputStaticMobileDirForImgs: 'mobile/img/'
 };

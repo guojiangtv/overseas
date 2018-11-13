@@ -1,1 +1,10 @@
-static_cblive/dist/v2/pc/
+static_cblive/src/v2/mobile/css/activity/recharge11.less
+static_cblive/src/v2/mobile/img/activity/recharge11
+static_cblive/src/v2/mobile/js/activity/recharge11.js
+static_cblive/dist/v2/mobile/css/activity/recharge11.css
+static_cblive/dist/v2/mobile/img/activity/recharge11
+static_cblive/dist/v2/mobile/js/activity/recharge11.js
+static_cblive/dist/v2/mobile/js/manifest.js
+cblive/web/html/dist/mobile/activity/recharge11.html
+cblive/web/html/src/mobile/activity/recharge11.ejs
+cblive/web/html/src/mobile/activity/recharge11.js

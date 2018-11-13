@@ -17,92 +17,103 @@ module.exports = class extends Generators {
      * @desc 询问用户
      */
     prompting () {
-        this.log(chalk.green('欢迎使用活动定制模板，正在检查路径配置，请稍等...'));
+        this.log(chalk.green('欢迎使用yeoman模板，正在检查路径配置，请稍等...'));
         if (!this._prepare()) {
             process.exit(1);
         }
 
-        return this.prompt([{
-            name: 'pName',
-            type: 'input',
-            message: '请输入活动名称',
-            default: 'activityName'
-        }, {
-            name: 'pTitle',
-            type: 'input',
-            message: '请输入活动标题',
-            default: 'activityTitle'
-        }, {
-            name: 'pAssets',
-            type: 'list',
-            message: '请选择模板',
-            choices: [{
-                name: 'PC & Mobile',
-                value: ['PC', 'Mobile'],
-                checked: true
-            }, {
-                name: 'PC',
-                value: ['PC']
-            }, {
-                name: 'Mobile',
-                value: ['Mobile']
-            }]
-        }]).then((answers) => {
-            this.log('Your Project Name (Dir & File name): ', answers.pName);
-            this.log('Your Project Title: ', answers.pTitle);
-            this.log('Your Project Template Type: ', answers.pAssets);
-
-            /* 打印输出目录 */
-            this.log(chalk.green('Please Confirm Your Project Output Path: '));
-
-            let filename = path.basename(answers.pName);
-
-            let files = {
-                'ejs': answers.pName + '.ejs',
-                'ejs_js': answers.pName + '.js',
-                'less': answers.pName + '.less',
-                'js': answers.pName + '.js',
-            };
-
-            this.props = answers;
-            this.props.filename = filename;
-            this.props.path = {};
-
-            /* 获取路径列表 */
-            answers.pAssets.forEach((type) => {
-                this._getPaths(type, files);
-            });
-
-        }).then(() => {
-            /* 确定这些文件的是否已经存在了 */
-            this.props.pAssets.forEach((type) => {
-                for (let key in this.props.path[type]) {
-                    let path = this.props.path[type][key];
-                    let existed = this.fs.exists(path);
-
-                    if (existed) {
-                        this.log(chalk.red('File Existed : ', path));
-                        this.log(chalk.red('Please Ensure The Project Can be Overwrited!'));
-                        this.log(chalk.red('Exit...'));
-                        process.exit(1);
+        return this.prompt([
+            {
+                name: 'pName',
+                type: 'input',
+                message: '请输入项目名称',
+                default: 'projectName'
+            },
+            {
+                name: 'pTitle',
+                type: 'input',
+                message: '请输入项目标题',
+                default: 'projectTitle'
+            },
+            {
+                name: 'pAssets',
+                type: 'list',
+                message: '请选择模板',
+                choices: [
+                    {
+                        name: 'PC & Mobile',
+                        value: ['PC', 'Mobile'],
+                        checked: true
+                    },
+                    {
+                        name: 'PC',
+                        value: ['PC']
+                    },
+                    {
+                        name: 'Mobile',
+                        value: ['Mobile']
                     }
+                ]
+            }
+        ])
+            .then(answers => {
+                this.log('Your Project Name (Dir & File name): ', answers.pName);
+                this.log('Your Project Title: ', answers.pTitle);
+                this.log('Your Project Template Type: ', answers.pAssets);
+
+                /* 打印输出目录 */
+                this.log(chalk.green('Please Confirm Your Project Output Path: '));
+
+                let filename = path.basename(answers.pName);
+
+                let files = {
+                    ejs: answers.pName + '.ejs',
+                    ejs_js: answers.pName + '.js',
+                    less: answers.pName + '.less',
+                    js: answers.pName + '.js'
+                };
+
+                this.props = answers;
+                this.props.filename = filename;
+                this.props.path = {};
+
+                /* 获取路径列表 */
+                answers.pAssets.forEach(type => {
+                    this._getPaths(type, files);
+                });
+            })
+            .then(() => {
+                /* 确定这些文件的是否已经存在了 */
+                this.props.pAssets.forEach(type => {
+                    for (let key in this.props.path[type]) {
+                        let path = this.props.path[type][key];
+                        let existed = this.fs.exists(path);
+
+                        if (existed) {
+                            this.log(chalk.red('File Existed : ', path));
+                            this.log(chalk.red('Please Ensure The Project Can be Overwrited!'));
+                            this.log(chalk.red('Exit...'));
+                            process.exit(1);
+                        }
+                    }
+                });
+
+                return this.prompt([
+                    {
+                        name: 'pathConfirm',
+                        type: 'confirm',
+                        message: 'The OutputPath above is Ok?',
+                        default: true
+                    }
+                ]);
+            })
+            .then(confirm => {
+                if (!confirm.pathConfirm) {
+                    this.log(chalk.red('You Change The Output Path in generator/generators/app/config.yo.js'));
+                    this.log(chalk.red('Exit...'));
+                    process.exit(1);
                 }
             });
-
-            return this.prompt([{
-                name: 'pathConfirm',
-                type: 'confirm',
-                message: 'The OutputPath above is Ok?',
-                default: true
-            }]);
-
-        }).then((confirm) => {
-            if (!confirm.pathConfirm) {
-                this.log(chalk.red('You Change The Output Path in generator/generators/app/config.yo.js'));
-                this.log(chalk.red('Exit...'));
-                process.exit(1);
-            }
-        });
     }
 
     /**
@@ -199,7 +210,7 @@ module.exports = class extends Generators {
             this.templatePath(path.resolve(this.sourceRoot(), './' + type.toLowerCase() + '/index.ejs' )),
             paths['ejs'],
             {
-                imgPath: path.relative(path.dirname(paths['ejs']), paths['imgs']).replace(/\\/g, "/"),
+                imgPath: path.relative(path.dirname(paths['ejs']), paths['imgs']).replace(/\\/g, '/'),
                 shareTitle: 'shareTitle',
                 shareContent: 'shareContent'
             }
@@ -235,7 +246,7 @@ module.exports = class extends Generators {
             paths['less'],
             {
                 projectName: this.props.pName,
-                imgPath: path.relative(path.dirname(paths['less']), paths['imgs']).replace(/\\/g, "/")
+                imgPath: path.relative(path.dirname(paths['less']), paths['imgs']).replace(/\\/g, '/')
             }
         );
 
@@ -244,7 +255,7 @@ module.exports = class extends Generators {
             this.templatePath(path.resolve(this.sourceRoot(), './' + type.toLowerCase() + '/scripts/main.js' )),
             paths['js'],
             {
-                stylePath: path.relative(path.dirname(paths['js']), paths['less']).replace(/\\/g, "/")
+                stylePath: path.relative(path.dirname(paths['js']), paths['less']).replace(/\\/g, '/')
             }
         );
     }
