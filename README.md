@@ -47,8 +47,8 @@ yarn install安装必要的项目依赖和开发依赖包
 #### svn获取项目文件
 
 1. 当前目录下svn checkout https://10.0.0.15/svn/develop/website/cblive/web/html
-2. src目录下svn checkout https://10.0.0.15/svn/develop/website/static_cblive/src/v2
-3. dist目录下svn checkout https://10.0.0.15/svn/develop/website/static_cblive/dist/v2
+2. 当前目录下svn checkout https://10.0.0.15/svn/develop/website/static_cblive/src
+3. 当前目录下svn checkout https://10.0.0.15/svn/develop/website/static_cblive/dist
 4. beta目录下svn checkout https://10.0.0.15/svn/develop/website/beta/cblive/web/html
 5. beta目录下svn checkout https://10.0.0.15/svn/develop/website/beta/static_cblive
 7. trunk目录下svn checkout https://10.0.0.15/svn/develop/website/trunk/cblive/web/html
