@@ -53,8 +53,8 @@ if(isPc){
 }else{
     //触屏版目录配置
     console.log('***********************触屏版编译*************************');
-    baseEntryDir = './src/v2/mobile/';
-    entryDir = baseEntryDir + '**/*.js';
+    baseEntryDir = './src/v2/mobile/js/';
+    entryDir = baseEntryDir + '**/*.*';
     outputDir = path.resolve(__dirname, './dist/v2/mobile/');
     outputPublicDir = 'http://static.cblive.tv/dist/v2/mobile/';
     basePageEntry = './html/src/mobile/';
@@ -84,55 +84,89 @@ module.exports = {
         filename: 'js/[name].js?v=[chunkhash:8]'
     },
     module: {
-        rules: [{
-            test: /\.vue$/,
-            loader: 'vue-loader',
-            options: {
-                postcss: [require(postcssConfigDir)]
-            }
-        }, {
-            test: /\.ejs$/,
-            use: 'happypack/loader?id=ejs'
-        }, {
-            test: /\.js$/,
-            enforce: 'pre',
-            use: 'happypack/loader?id=js',
-            include: path.resolve(__dirname, entryDir),
-            exclude: [baseEntryDir + 'js/lib', baseEntryDir + 'js/component'],
-        }, {
-            test: /\.js$/,
-            use: 'happypack/loader?id=babel',
-            exclude: ['node_modules', baseEntryDir + 'js/lib', baseEntryDir + 'js/component']
-        },  {
-            test: /\.css$/,
-            use: ['style-loader', 'css-loader', 'postcss-loader'],
-            exclude: [baseEntryDir + 'css/lib']
-        }, {
-            test: /\.less$/,
-            use: ExtractTextPlugin.extract(['css-loader', 'postcss-loader', 'less-loader']),
-        }, {
-            test: /\.(png|jpg|gif)$/,
-            loader: 'url-loader',
-            options: {
-                limit: 5120,
-                name: function(p) {
-                    let tem_path = p.split(/\\img\\/)[1];
-                    tem_path = tem_path.replace(/\\/g, '/');
-                    return 'img/' + tem_path + '?v=[hash:8]';
-                }
-            }
-        }, {
-            test: /\.(eot|svg|ttf|woff|woff2)(\?\S*)?$/,
-            loader: 'file-loader'
-        },{
-            test: /\.html$/,
-            use: [{
-                loader: 'html-loader',
+        rules: [
+            {
+                test: /\.tsx?$/,
+                exclude: /node_modules/,
+                use: [
+                    'babel-loader',
+                    {
+                        loader: 'ts-loader',
+                        options: { appendTsxSuffixTo: [/\.vue$/] }
+                    }
+                ]
+            },
+            {
+                test: /\.vue$/,
+                loader: 'vue-loader',
                 options: {
-                    minimize: true
+                    postcss: [require(postcssConfigDir)]
                 }
-            }],
-        }]
+            },
+            {
+                test: /\.ejs$/,
+                use: 'happypack/loader?id=ejs'
+            },
+            {
+                test: /\.js$/,
+                enforce: 'pre',
+                use: 'happypack/loader?id=js',
+                include: path.resolve(__dirname, entryDir),
+                exclude: [
+                    baseEntryDir + 'lib',
+                    baseEntryDir + 'component'
+                ]
+            },
+            {
+                test: /\.js$/,
+                use: 'happypack/loader?id=babel',
+                exclude: [
+                    'node_modules',
+                    baseEntryDir + 'lib',
+                    baseEntryDir + 'component'
+                ]
+            },
+            {
+                test: /\.css$/,
+                use: ['style-loader', 'css-loader', 'postcss-loader'],
+                //exclude: [baseEntryDir + 'css/lib']
+            },
+            {
+                test: /\.less$/,
+                use: ExtractTextPlugin.extract([
+                    'css-loader',
+                    'postcss-loader',
+                    'less-loader'
+                ])
+            },
+            {
+                test: /\.(png|jpg|gif)$/,
+                loader: 'url-loader',
+                options: {
+                    limit: 5120,
+                    name: function(p) {
+                        let tem_path = p.split(/\\img\\/)[1];
+                        tem_path = tem_path.replace(/\\/g, '/');
+                        return 'img/' + tem_path + '?v=[hash:8]';
+                    }
+                }
+            },
+            {
+                test: /\.(eot|svg|ttf|woff|woff2)(\?\S*)?$/,
+                loader: 'file-loader'
+            },
+            {
+                test: /\.html$/,
+                use: [
+                    {
+                        loader: 'html-loader',
+                        options: {
+                            minimize: true
+                        }
+                    }
+                ]
+            }
+        ]
     },
     plugins: [
         new HappyPack({
@@ -143,12 +177,14 @@ module.exports = {
         new HappyPack({
             id: 'js',
             threadPool: HappyThreadPool,
-            loaders: [{
-                loader: 'eslint-loader',
-                options: {
-                    fix: true
+            loaders: [
+                {
+                    loader: 'eslint-loader',
+                    options: {
+                        fix: true
+                    }
                 }
-            }]
+            ]
         }),
         new HappyPack({
             id: 'babel',
@@ -163,7 +199,7 @@ module.exports = {
 
         //将dll.js文件移到dist文件夹内
         new CopyWebpackPlugin([
-            { from: baseEntryDir + '/js/lib', to: outputDir + '/js/lib' },
+            { from: baseEntryDir + '/lib', to: outputDir + '/js/lib' }
         ]),
         //稳定chunkID
         new HashedChunkIdsPlugin(),
@@ -175,16 +211,15 @@ module.exports = {
             // 指定manifest.json
             manifest: require('./' + dll_manifest_name + '.json'),
             // 当前Dll的所有内容都会存放在这个参数指定变量名的一个全局变量下，注意与DllPlugin的name参数保持一致
-            name: 'dll_library',
+            name: 'dll_library'
         }),
-
 
         new ExtractTextPlugin('css/[name].css?v=[contenthash:8]'),
         new webpack.LoaderOptionsPlugin({
             options: {
                 eslint: require(eslintConfigDir),
                 postcss: require(postcssConfigDir)
-            },
+            }
         }),
 
         // 提取公共模块
@@ -232,13 +267,12 @@ function getEntry(globPath) {
     glob.sync(globPath).forEach(function(entry) {
 
         //排出layouts内的公共文件
-        if (entry.indexOf('layouts') == -1 && entry.indexOf('lib') == -1 && entry.indexOf('components') == -1) {
-
+        if (entry.indexOf('layouts') == -1 && entry.indexOf('lib') == -1 && entry.indexOf('components') == -1 && entry.indexOf('vue') === -1) {
             //判断是js文件还是html模板文件
-            let isJsFile = entry.indexOf('.js') !== -1;
-            let dirArr = isJsFile ?
-                entry.split('/js/')[1].split('.js')[0] :
-                entry.split(basePageEntry)[1].split('.ejs')[0];
+            let isEjsFile = entry.indexOf('.ejs') !== -1;
+            let dirArr = isEjsFile ?
+                entry.split(basePageEntry)[1].split('.ejs')[0]:
+                entry.split('/js/')[1].split('.')[0] ;
 
             // basename = dirArr.join('/');
 
