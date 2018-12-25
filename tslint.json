@@ -1,0 +1,37 @@
+//https://palantir.github.io/tslint/usage/configuration/
+{
+    "defaultSeverity": "error",
+    "extends": [
+        "tslint:recommended",
+        //https://github.com/buzinas/tslint-eslint-rules#rules-copied-from-the-eslint-website
+        "tslint-config-standard"
+    ],
+    "jsRules": {},
+    "rules": {
+        //警告不是一个promise的await
+        "await-promise": [true, "Thenable"],
+        //disallow use of the new operator when not part of an assignment or comparison
+        "no-unused-expression": false,
+        //specify whether backticks, double or single quotes should be used
+        "quotemark":[true, "single","avoid-escape"],
+        //disallow use of console in the node environment (recommended)
+        "no-console": [false,"log","error"],
+        "object-literal-sort-keys": false,
+        "semicolon":[true, "never", "ignore-interfaces"],
+        "ter-indent":[true, 4],
+        "typedef-whitespace": false,
+        "whitespace": false,
+        "member-access": false,
+        "one-line": false,
+        "trailing-comma": [true, {
+            "multiline": {
+                "objects": "ignore",
+                "arrays": "never",
+                "functions": "never",
+                "typeLiterals": "ignore"
+            },
+            "esSpecCompliant": true
+        }]
+    },
+    "rulesDirectory": []
+}

@@ -75,91 +75,92 @@ if(isPc){
 console.log(entries);
 
 module.exports = {
-    /* 输入文件 */
+    cache: true,
     resolve: require(resolveConfigDir),
     entry: entries,
     output: {
         path: outputDir,
         publicPath: outputPublicDir,
-        filename: 'js/[name].js?v=[chunkhash:8]'
+        filename: "js/[name].js?v=[chunkhash:8]"
     },
     module: {
         rules: [
             {
-                test: /\.tsx?$/,
+                test: /\.ts$/,
                 exclude: /node_modules/,
-                use: [
-                    'babel-loader',
-                    {
-                        loader: 'ts-loader',
-                        options: { appendTsxSuffixTo: [/\.vue$/] }
-                    }
-                ]
+                enforce: "pre",
+                loader: "tslint-loader",
+                options: { fix: true }
+            },
+            {
+                test: /\.tsx?$/,
+                loader: "ts-loader",
+                exclude: /node_modules/,
+                options: {
+                    appendTsSuffixTo: [/\.vue$/]
+                }
             },
             {
                 test: /\.vue$/,
-                loader: 'vue-loader',
+                loader: "vue-loader",
                 options: {
                     postcss: [require(postcssConfigDir)]
                 }
             },
             {
                 test: /\.ejs$/,
-                use: 'happypack/loader?id=ejs'
+                use: "happypack/loader?id=ejs"
             },
             {
                 test: /\.js$/,
-                enforce: 'pre',
-                use: 'happypack/loader?id=js',
+                enforce: "pre",
+                use: "happypack/loader?id=js",
                 include: path.resolve(__dirname, entryDir),
-                exclude: [
-                    baseEntryDir + 'lib',
-                    baseEntryDir + 'component'
-                ]
+                exclude: [baseEntryDir + "lib", baseEntryDir + "component"]
             },
             {
                 test: /\.js$/,
-                use: 'happypack/loader?id=babel',
+                use: "happypack/loader?id=babel",
                 exclude: [
-                    'node_modules',
-                    baseEntryDir + 'lib',
-                    baseEntryDir + 'component'
+                    "node_modules",
+                    baseEntryDir + "lib",
+                    baseEntryDir + "component"
                 ]
             },
             {
                 test: /\.css$/,
-                use: ['style-loader', 'css-loader', 'postcss-loader'],
+                use: ["style-loader", "css-loader", "postcss-loader"]
                 //exclude: [baseEntryDir + 'css/lib']
             },
             {
                 test: /\.less$/,
                 use: ExtractTextPlugin.extract([
-                    'css-loader',
-                    'postcss-loader',
-                    'less-loader'
+                    "css-loader",
+                    "postcss-loader",
+                    "less-loader"
                 ])
             },
             {
                 test: /\.(png|jpg|gif)$/,
-                loader: 'url-loader',
+                loader: "url-loader",
                 options: {
                     limit: 5120,
                     name: function(p) {
                         let tem_path = p.split(/\\img\\/)[1];
-                        tem_path = tem_path.replace(/\\/g, '/');
-                        return 'img/' + tem_path + '?v=[hash:8]';
+                        tem_path = tem_path.replace(/\\/g, "/");
+                        return "img/" + tem_path + "?v=[hash:8]";
                     }
                 }
             },
             {
                 test: /\.(eot|svg|ttf|woff|woff2)(\?\S*)?$/,
-                loader: 'file-loader'
+                loader: "file-loader"
             },
             {
                 test: /\.html$/,
                 use: [
                     {
-                        loader: 'html-loader',
+                        loader: "html-loader",
                         options: {
                             minimize: true
                         }
@@ -170,16 +171,16 @@ module.exports = {
     },
     plugins: [
         new HappyPack({
-            id: 'ejs',
+            id: "ejs",
             threadPool: HappyThreadPool,
-            loaders: ['ejs-loader']
+            loaders: ["ejs-loader"]
         }),
         new HappyPack({
-            id: 'js',
+            id: "js",
             threadPool: HappyThreadPool,
             loaders: [
                 {
-                    loader: 'eslint-loader',
+                    loader: "eslint-loader",
                     options: {
                         fix: true
                     }
@@ -187,9 +188,9 @@ module.exports = {
             ]
         }),
         new HappyPack({
-            id: 'babel',
+            id: "babel",
             threadPool: HappyThreadPool,
-            loaders: ['babel-loader?cacheDirectory=true']
+            loaders: ["babel-loader?cacheDirectory=true"]
         }),
         //浏览器同步刷新
         new BrowserSyncPlugin({
@@ -199,7 +200,7 @@ module.exports = {
 
         //将dll.js文件移到dist文件夹内
         new CopyWebpackPlugin([
-            { from: baseEntryDir + '/lib', to: outputDir + '/js/lib' }
+            { from: baseEntryDir + "/lib", to: outputDir + "/js/lib" }
         ]),
         //稳定chunkID
         new HashedChunkIdsPlugin(),
@@ -209,12 +210,12 @@ module.exports = {
             // 指定一个路径作为上下文环境，需要与DllPlugin的context参数保持一致，建议统一设置为项目根目录
             context: __dirname,
             // 指定manifest.json
-            manifest: require('./' + dll_manifest_name + '.json'),
+            manifest: require("./" + dll_manifest_name + ".json"),
             // 当前Dll的所有内容都会存放在这个参数指定变量名的一个全局变量下，注意与DllPlugin的name参数保持一致
-            name: 'dll_library'
+            name: "dll_library"
         }),
 
-        new ExtractTextPlugin('css/[name].css?v=[contenthash:8]'),
+        new ExtractTextPlugin("css/[name].css?v=[contenthash:8]"),
         new webpack.LoaderOptionsPlugin({
             options: {
                 eslint: require(eslintConfigDir),
@@ -224,8 +225,8 @@ module.exports = {
 
         // 提取公共模块
         new webpack.optimize.CommonsChunkPlugin({
-            names: ['vendors', 'manifest'], // 公共模块的名称
-            chunks: 'vendors', // chunks是需要提取的模块
+            names: ["vendors", "manifest"], // 公共模块的名称
+            chunks: "vendors", // chunks是需要提取的模块
             minChunks: Infinity //公共模块最小被引用的次数
         })
     ]
