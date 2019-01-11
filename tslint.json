@@ -3,11 +3,16 @@
     "defaultSeverity": "error",
     "extends": [
         "tslint:recommended",
+        "@kurosame/tslint-config-vue"
         //https://github.com/buzinas/tslint-eslint-rules#rules-copied-from-the-eslint-website
-        "tslint-config-standard"
+        // "tslint-config-standard",
     ],
     "jsRules": {},
     "rules": {
+        "indent": [true,"spaces", 4],
+        // "interface-name": false,
+        // "no-consecutive-blank-lines": false,
+        "max-line-length": false,
         //警告不是一个promise的await
         "await-promise": [true, "Thenable"],
         //disallow use of the new operator when not part of an assignment or comparison
@@ -18,7 +23,6 @@
         "no-console": [false,"log","error"],
         "object-literal-sort-keys": false,
         "semicolon":[true, "never", "ignore-interfaces"],
-        "ter-indent":[true, 4],
         "typedef-whitespace": false,
         "whitespace": false,
         "member-access": false,

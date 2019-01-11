@@ -72,8 +72,3 @@ yarn install安装必要的项目依赖和开发依赖包
 * gulp copybeta 将文件列表中文件移动至相应的beta文件夹
 * gulp copytrunk 将文件列表中文件移动至相应的trunk文件夹
 
-
-建议使用sublime text3安装以下插件
-
-1. EditorConfig统一控制编辑器中的缩进
-2. sublimeLinter，sublimeLinter-eslint提示不符合规范的代码

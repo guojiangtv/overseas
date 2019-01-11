@@ -28,6 +28,7 @@
     "webpack-zepto": "0.0.1"
   },
   "devDependencies": {
+    "@kurosame/tslint-config-vue": "^1.4.0",
     "autoprefixer": "^7.2.5",
     "babel-core": "^6.26.0",
     "babel-eslint": "8.2.1",
@@ -45,6 +46,7 @@
     "copy-webpack-plugin": "^4.3.1",
     "css-loader": "^0.28.8",
     "ejs-loader": "^0.3.0",
+    "eruda": "^1.5.4",
     "eslint": "4.15.0",
     "eslint-config-standard": "10.2.1",
     "eslint-import-resolver-webpack": "^0.10.1",
@@ -71,6 +73,7 @@
     "style-loader": "^0.19.1",
     "ts-loader": "2.0.3",
     "tslint": "^5.12.0",
+    "tslint-config-prettier": "^1.17.0",
     "tslint-config-standard": "^8.0.1",
     "tslint-loader": "^3.5.4",
     "typescript": "3.0.1",

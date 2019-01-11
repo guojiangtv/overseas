@@ -13,6 +13,7 @@ module.exports = {
         'vue': vue_source,
         'axios': path.resolve(__dirname, './../node_modules/axios/dist/axios.min.js'),
         'jquery':path.resolve(__dirname, './../node_modules/jquery/dist/jquery.min.js'),
+        'eruda':path.resolve(__dirname, './../node_modules/eruda/eruda.min.js'),
         'webpack-zepto': path.resolve(__dirname, './../node_modules/webpack-zepto/index.js'),
         'layer': path.resolve(__dirname, baseEntryDir + 'js/lib/layer.js'),
         'common': path.resolve(__dirname, baseEntryDir + 'js/common/common.js'),

@@ -17,14 +17,14 @@ if(isPc){
     baseEntryDir = './src/v2/pc/';
     entryDir = baseEntryDir + '**/*.js';
     outputDir = path.resolve(__dirname, './src/v2/pc/');
-    outputPublicDir = 'https://static.cblive.tv/dist/pc/';
+    outputPublicDir = '//static.cblive.tv/dist/pc/';
     entries = ['vue','axios','layer','jquery'];
     dll_manifest_name = 'dll_pc_manifest';
 }else{
     baseEntryDir = './src/v2/mobile/';
     entryDir = baseEntryDir + '**/*.js';
     outputDir = path.resolve(__dirname, './src/v2/mobile/');
-    outputPublicDir = 'http://static.cblive.tv/dist/mobile/';
+    outputPublicDir = '//static.cblive.tv/dist/mobile/';
     entries = ['vue', 'axios', 'layer', 'webpack-zepto'];
     dll_manifest_name = 'dll_manifest';
 }
@@ -88,7 +88,6 @@ module.exports = {
                     name: function(p){
                         let tem_path = p.split(/\\img\\/)[1];
                         tem_path = tem_path.replace(/\\/g,'/');
-
                         return 'img/'+tem_path + '?v=[hash:8]';
                     }
                 }
@@ -145,7 +144,6 @@ if (prod) {
     ]);
 } else {
     console.log('当前编译环境：dev');
-
     module.exports.devtool = 'cheap-module-source-map';
 
 }

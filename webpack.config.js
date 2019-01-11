@@ -9,6 +9,7 @@ const BrowserSyncPlugin = require('browser-sync-webpack-plugin');
 const htmlWebpackPlugin = require('html-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+const HtmlWebpackIncludeAssetsPlugin = require('html-webpack-include-assets-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HashedChunkIdsPlugin = require('./config/hashedChunkIdsPlugin.js');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
@@ -56,7 +57,7 @@ if(isPc){
     baseEntryDir = './src/v2/mobile/js/';
     entryDir = baseEntryDir + '**/*.*';
     outputDir = path.resolve(__dirname, './dist/v2/mobile/');
-    outputPublicDir = 'http://static.cblive.tv/dist/v2/mobile/';
+    outputPublicDir = '//static.joylive.tv/dist/v2/mobile/';
     basePageEntry = './html/src/mobile/';
     basePageOutput = './html/dist/mobile/';
     browserSyncBaseDir = './html/dist/mobile/';
@@ -93,7 +94,7 @@ module.exports = {
                 options: { fix: true }
             },
             {
-                test: /\.tsx?$/,
+                test: /\.ts?$/,
                 loader: "ts-loader",
                 exclude: /node_modules/,
                 options: {
@@ -214,7 +215,14 @@ module.exports = {
             // 当前Dll的所有内容都会存放在这个参数指定变量名的一个全局变量下，注意与DllPlugin的name参数保持一致
             name: "dll_library"
         }),
-
+        new HtmlWebpackIncludeAssetsPlugin({
+            assets: ["js/manifest.js"],
+            append: false
+        }),
+        new HtmlWebpackIncludeAssetsPlugin({
+            assets: ["js/lib/dll.js"],
+            append: false
+        }),
         new ExtractTextPlugin("css/[name].css?v=[contenthash:8]"),
         new webpack.LoaderOptionsPlugin({
             options: {

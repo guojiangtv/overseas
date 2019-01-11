@@ -20,7 +20,7 @@
     // 允许编译javascript文件
     "allowJs": true,
     // 解析非相对模块名的基准目录
-    "baseUrl": "./",
+    "baseUrl": ".",
     // 编译输出目标 ES 版本
     "target": "es5",
     // 这可以对 `this` 上的数据属性进行更严格的推断, 以严格模式解析
@@ -35,10 +35,16 @@
     "noImplicitAny": false,
     // 是否包含可以用于 debug 的 sourceMap
     "sourceMap": true,
-    "pretty": true
+    "pretty": true,
+    "paths": {
+      "@/*": [
+        "src/*"
+      ]
+    }
   },
   "include": [
-        "src/**/*.ts"
+        "src/**/*.ts",
+        "src/**/ts-*.vue"
     ],
   "exclude": [
     "node_modules"
