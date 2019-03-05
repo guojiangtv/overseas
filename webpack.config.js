@@ -12,6 +12,7 @@ const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const HtmlWebpackIncludeAssetsPlugin = require('html-webpack-include-assets-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HashedChunkIdsPlugin = require('./config/hashedChunkIdsPlugin.js');
+const HtmlWebpackIncludeJsPlugin = require('./config/htmlWebpackIncludeJsPlugin.js');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 
 
@@ -195,7 +196,7 @@ module.exports = {
         }),
         //浏览器同步刷新
         new BrowserSyncPlugin({
-            port: 3000,
+            port: 9000,
             server: { baseDir: [browserSyncBaseDir] }
         }),
 
@@ -223,6 +224,16 @@ module.exports = {
             assets: ["js/lib/dll.js"],
             append: false
         }),
+        new HtmlWebpackIncludeJsPlugin({
+            js: [{
+                path: [
+                    `${baseEntryDir}lib/flexible.js`,
+                    `${baseEntryDir}components/monitor/globalMonitor.js`
+                ], // 文件访问的绝对路径, 如：g:/js/lib/common.js, 此时需要配置inject: inline
+                inject: 'inline' // 插入方式，内联
+            }]
+        }),
+
         new ExtractTextPlugin("css/[name].css?v=[contenthash:8]"),
         new webpack.LoaderOptionsPlugin({
             options: {

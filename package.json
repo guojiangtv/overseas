@@ -28,7 +28,6 @@
     "webpack-zepto": "0.0.1"
   },
   "devDependencies": {
-    "@kurosame/tslint-config-vue": "^1.4.0",
     "autoprefixer": "^7.2.5",
     "babel-core": "^6.26.0",
     "babel-eslint": "8.2.1",
@@ -70,6 +69,7 @@
     "mockjs": "1.0.0",
     "optimize-css-assets-webpack-plugin": "^3.2.0",
     "postcss-loader": "1.3.3",
+    "prettier": "^1.16.4",
     "style-loader": "^0.19.1",
     "ts-loader": "2.0.3",
     "tslint": "^5.12.0",

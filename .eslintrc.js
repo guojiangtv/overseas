@@ -11,7 +11,9 @@ module.exports = {
     //定义全局变量
     globals: {
         window:true,//用于定义方法便于app调用
-        _czc: true //用于统计
+        _czc: true, //用于统计
+        recharge:true,//安卓js对象
+        gBridge:true//ios android js对象
     },
     extends: [
         "eslint:recommended",

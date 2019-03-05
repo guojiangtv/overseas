@@ -15,6 +15,7 @@ module.exports = {
         'jquery':path.resolve(__dirname, './../node_modules/jquery/dist/jquery.min.js'),
         'eruda':path.resolve(__dirname, './../node_modules/eruda/eruda.min.js'),
         'webpack-zepto': path.resolve(__dirname, './../node_modules/webpack-zepto/index.js'),
+        'report':path.resolve(__dirname, baseEntryDir + 'js/components/monitor/report.js'),
         'layer': path.resolve(__dirname, baseEntryDir + 'js/lib/layer.js'),
         'common': path.resolve(__dirname, baseEntryDir + 'js/common/common.js'),
     },

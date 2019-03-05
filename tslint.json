@@ -3,7 +3,7 @@
     "defaultSeverity": "error",
     "extends": [
         "tslint:recommended",
-        "@kurosame/tslint-config-vue"
+        "tslint-config-prettier"
         //https://github.com/buzinas/tslint-eslint-rules#rules-copied-from-the-eslint-website
         // "tslint-config-standard",
     ],
